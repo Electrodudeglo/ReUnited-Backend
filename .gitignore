@@ -9,7 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
-appsetings.json
+appsettings.json
 appsettings.Development.json
 appsettings.Production.json
 
