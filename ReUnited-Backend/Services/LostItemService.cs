@@ -1,0 +1,20 @@
+﻿using ReUnited_Backend.DataModels;
+using ReUnited_Backend.Repositories;
+
+namespace ReUnited_Backend.Services
+{
+    public interface ILostItemService
+    {
+        
+    }
+
+    public class LostItemService : ILostItemService
+    {
+        private readonly ILostItemRepository _lostItemRepository;
+
+        public LostItemService(ILostItemRepository lostItemRepository)
+        {
+            _lostItemRepository = lostItemRepository;
+        }
+    }
+}
