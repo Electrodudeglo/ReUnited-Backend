@@ -14,5 +14,13 @@ namespace ReUnited_Backend.Controllers
         {
             _lostItemService = lostItemService;
         }
+
+
+        [HttpGet]
+        public IActionResult GetAllItems()
+        {
+            var getLostItems = _lostItemService.GetAllItems();
+            return Ok(getLostItems);
+        }
     }
 }
