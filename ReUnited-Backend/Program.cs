@@ -1,8 +1,15 @@
+using ReUnited_Backend.DbContexts;
+using Microsoft.EntityFrameworkCore;
 using ReUnited_Backend.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 // Add services to the container.
+
+builder.Services.AddDbContext<LostItemDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
