@@ -7,6 +7,10 @@ namespace ReUnited_Backend.DbContexts
     {
         public DbSet<LostItem> LostItems { get; set; }
 
+        public LostItemDbContext(DbContextOptions<LostItemDbContext> options) 
+            : base(options) 
+        {
 
+        }
     }
 }
