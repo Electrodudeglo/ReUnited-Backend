@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ReUnited_Backend.Services;
 
 namespace ReUnited_Backend.Controllers
 {
