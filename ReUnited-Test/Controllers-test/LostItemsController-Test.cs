@@ -24,7 +24,6 @@ public class LostItemsController_Test
     [Test]
     public void GetAllItems_Returns_Ok_With_List_Of_Items()
     {
-
         List<LostItem> lostItems = new List<LostItem>
         {
             new LostItem(),
@@ -32,9 +31,10 @@ public class LostItemsController_Test
         };
         
         _lostItemsServiceMoq.Setup(s => s.GetAllItems()).Returns(lostItems);
+        
         OkObjectResult? result = _lostItemController.GetAllItems() as OkObjectResult;
 
-
-        Assert.That(result, Is.TypeOf<OkObjectResult>());      
+        Assert.That(result, Is.TypeOf<OkObjectResult>());
+        Assert.That(result.Value, Is.EqualTo(lostItems));
     }
 }
