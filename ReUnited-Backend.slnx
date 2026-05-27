@@ -1,6 +1,4 @@
 <Solution>
   <Project Path="ReUnited-Backend/ReUnited-Backend.csproj" />
-  <Project Path="ReUnited-Test/ReUnited-Test.csproj" Id="3304920a-cbbe-48dd-9ae0-a40d9e6fdd42">
-    <Build Solution="Debug|*" Project="false" />
-  </Project>
+  <Project Path="ReUnited-Test/ReUnited-Test.csproj" Id="3304920a-cbbe-48dd-9ae0-a40d9e6fdd42" />
 </Solution>
