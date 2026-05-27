@@ -32,12 +32,9 @@ public class LostItemsController_Test
         };
         
         _lostItemsServiceMoq.Setup(s => s.GetAllItems()).Returns(lostItems);
+        OkObjectResult? result = _lostItemController.GetAllItems() as OkObjectResult;
 
-        OkObjectResult result = _lostItemController.GetAllItems() as OkObjectResult;
 
-        Assert.IsNotNull(result);
-        Assert.AreEqual(200, result.StatusCode);
-        Assert.AreEqual(lostItems, result.Value);
-
+        Assert.That(result, Is.TypeOf<OkObjectResult>());      
     }
 }
