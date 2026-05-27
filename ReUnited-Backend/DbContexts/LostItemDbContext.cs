@@ -1,4 +1,4 @@
-﻿
+﻿using ReUnited_Backend.DataModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace ReUnited_Backend.DbContexts
