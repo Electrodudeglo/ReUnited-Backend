@@ -1,4 +1,4 @@
-﻿namespace ReUnited_Backend.Repository
+﻿namespace ReUnited_Backend.Repositories
 {
     using DbContexts;
     using DataModels;
