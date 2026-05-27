@@ -1,9 +1,10 @@
 using ReUnited_Backend.DbContexts;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-string connectionString = builder.Configuration.GetConnectionString("CONNECTION_STRING");
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container.
 
