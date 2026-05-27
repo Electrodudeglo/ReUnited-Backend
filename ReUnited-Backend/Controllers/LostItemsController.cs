@@ -5,7 +5,13 @@ namespace ReUnited_Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class LostItemsController : ControllerBase
     {
+        private readonly ILostItemService _lostItemService;
+
+        public LostItemsController(ILostItemService lostItemService)
+        {
+            _lostItemService = lostItemService;
+        }
     }
 }
