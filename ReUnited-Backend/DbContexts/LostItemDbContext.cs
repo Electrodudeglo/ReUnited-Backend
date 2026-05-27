@@ -1,6 +1,12 @@
-﻿namespace ReUnited_Backend.DbContexts
+﻿
+using Microsoft.EntityFrameworkCore;
+
+namespace ReUnited_Backend.DbContexts
 {
-    public class LostItemDbContext
+    public class LostItemDbContext : DbContext
     {
+        public DbSet<LostItem> LostItems { get; set; }
+
+
     }
 }
