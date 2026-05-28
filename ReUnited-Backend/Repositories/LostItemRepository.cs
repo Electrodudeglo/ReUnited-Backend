@@ -5,7 +5,8 @@
 
     public interface ILostItemRepository
     {
-        public IEnumerable<LostItem> GetAllItems();       
+        public IEnumerable<LostItem> GetAllItems();
+        public LostItem GetOneItem(int id);
     }
 
     public class LostItemRepository : ILostItemRepository
@@ -20,5 +21,12 @@
         {
             return _dbContext.LostItems.ToList();
         }
+
+
+        public LostItem GetOneItem(int id)
+        {
+            return _dbContext.LostItems.FirstOrDefault(l => l.Id == id);
+        }
+
     }
 }
