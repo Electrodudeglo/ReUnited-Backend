@@ -6,6 +6,7 @@ namespace ReUnited_Backend.Services
     public interface ILostItemService
     {
         public IEnumerable<LostItem> GetAllItems();
+        public LostItem GetOneItem(int id);
     }
 
     public class LostItemService : ILostItemService
@@ -21,6 +22,11 @@ namespace ReUnited_Backend.Services
         public IEnumerable<LostItem> GetAllItems()
         {
             return _lostItemRepository.GetAllItems();
+        }
+
+        public LostItem GetOneItem(int id)
+        {
+            return _lostItemRepository.GetOneItem(id);
         }
 
     }
