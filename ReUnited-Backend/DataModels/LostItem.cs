@@ -3,6 +3,15 @@
     using System.ComponentModel.DataAnnotations;
     public class LostItem
     {
+        public LostItem()
+        {
+            City = string.Empty;    
+            Postcode = string.Empty;
+            Category = string.Empty;    
+            ItemDescription = string.Empty;
+            Picture = string.Empty;
+            
+        }
         [Key]
         public int Id { get; set; }
 
@@ -30,9 +39,10 @@
         [MaxLength(500)]
         public string ItemDescription { get; set; } = string.Empty;
 
-        public string? AdditionalInformation { get; set; }
+        public string AdditionalInformation { get; set; } = string.Empty;
 
-        public byte[]? Picture { get; set; }
+        [Required]
+        public string Picture { get; set; }
 
     }
 }
