@@ -17,12 +17,10 @@ namespace ReUnited_Backend.Controllers
 
 
         [HttpGet]
-        public IActionResult GetAllItems() => Ok(_lostItemService.GetAllItems());
+        public IActionResult GetLostItems() => Ok(_lostItemService.GetLostItems());
 
         [HttpGet]
-        public IActionResult GetOneItem(int id) => Ok(_lostItemService.GetOneItem(id));
+        public IActionResult GetLostItemById(int id) => Ok(_lostItemService.GetLostItemsById(id));
 
-
-        
     }
 }

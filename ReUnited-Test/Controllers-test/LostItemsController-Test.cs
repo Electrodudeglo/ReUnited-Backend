@@ -37,4 +37,13 @@ public class LostItemsController_Test
         Assert.That(result, Is.TypeOf<OkObjectResult>());
         Assert.That(result.Value, Is.EqualTo(lostItems));
     }
+
+    [Test]
+    public void GetOneItem_Returns_Ok_With_One_Item()
+    {
+
+        LostItem oneLostItem = new LostItem();
+
+
+    }
 }
