@@ -1,3 +1,112 @@
-{
-
-}
+[
+  {
+    "Id": 1,
+    "City": "London",
+    "Postcode": "SW1A1AA",
+    "Email": "john.doe@example.com",
+    "PhoneNumber": "07123456789",
+    "Category": "Electronics",
+    "ItemDescription": "Black iPhone 14 Pro with cracked screen protector.",
+    "AdditionalInformation": "Lost near Victoria Station on Monday evening.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 2,
+    "City": "Manchester",
+    "Postcode": "M11AE",
+    "Email": "sarah89@example.com",
+    "PhoneNumber": "07234567890",
+    "Category": "Wallet",
+    "ItemDescription": "Brown leather wallet containing driving licence and bank cards.",
+    "AdditionalInformation": "Possibly left in a taxi.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 3,
+    "City": "Birmingham",
+    "Postcode": "B12JT",
+    "Email": "alex.green@example.com",
+    "PhoneNumber": "07345678901",
+    "Category": "Keys",
+    "ItemDescription": "Set of house keys with a blue Manchester City keyring.",
+    "AdditionalInformation": "Lost near Bullring Shopping Centre.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 4,
+    "City": "Leeds",
+    "Postcode": "LS12BH",
+    "Email": "emma.white@example.com",
+    "PhoneNumber": "07456789012",
+    "Category": "Bag",
+    "ItemDescription": "Grey North Face backpack containing university books.",
+    "AdditionalInformation": "Left on a train from York to Leeds.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 5,
+    "City": "Liverpool",
+    "Postcode": "L18JQ",
+    "Email": "mike.taylor@example.com",
+    "PhoneNumber": "07567890123",
+    "Category": "Jewellery",
+    "ItemDescription": "Gold bracelet with small heart charm.",
+    "AdditionalInformation": "Lost during a concert at the arena.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 6,
+    "City": "Bristol",
+    "Postcode": "BS16QF",
+    "Email": "lucy.brown@example.com",
+    "PhoneNumber": "07678901234",
+    "Category": "Phone",
+    "ItemDescription": "White Samsung Galaxy S23 with floral phone case.",
+    "AdditionalInformation": "Lost in Cabot Circus shopping centre.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 7,
+    "City": "Nottingham",
+    "Postcode": "NG12FS",
+    "Email": "daniel.smith@example.com",
+    "PhoneNumber": "07789012345",
+    "Category": "Clothing",
+    "ItemDescription": "Dark blue winter coat with fur-lined hood.",
+    "AdditionalInformation": "Forgotten at a restaurant.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 8,
+    "City": "Sheffield",
+    "Postcode": "S12HB",
+    "Email": "olivia.jones@example.com",
+    "PhoneNumber": "07890123456",
+    "Category": "Documents",
+    "ItemDescription": "Blue folder containing passport and travel documents.",
+    "AdditionalInformation": "Lost at Sheffield train station.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 9,
+    "City": "Newcastle",
+    "Postcode": "NE11RF",
+    "Email": "chris.evans@example.com",
+    "PhoneNumber": "07901234567",
+    "Category": "Sports Equipment",
+    "ItemDescription": "Red mountain bike with white stripes and bottle holder.",
+    "AdditionalInformation": "Taken from outside a supermarket.",
+    "Picture": "images/placeholder.png"
+  },
+  {
+    "Id": 10,
+    "City": "Edinburgh",
+    "Postcode": "EH12NG",
+    "Email": "sophie.wilson@example.com",
+    "PhoneNumber": "07012345678",
+    "Category": "Laptop",
+    "ItemDescription": "Silver MacBook Air with stickers on the lid.",
+    "AdditionalInformation": "Left in a coffee shop near Princes Street.",
+    "Picture": "images/placeholder.png"
+  }
+]
