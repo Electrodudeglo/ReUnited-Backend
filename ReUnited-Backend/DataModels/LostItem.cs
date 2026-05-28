@@ -3,6 +3,9 @@
     using System.ComponentModel.DataAnnotations;
     public class LostItem
     {
+        public LostItem()
+        {
+        }
         public LostItem(
             string city,
             string postcode,
@@ -53,7 +56,7 @@
         public string AdditionalInformation { get; set; } = string.Empty;
 
         [Required]
-        public string Picture { get; set; }
+        public string Picture { get; set; } = string.Empty;
 
     }
 }
