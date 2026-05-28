@@ -22,16 +22,25 @@ public class LostItemService_Test
     [Test]
     public void GetAllItems_Returns_List_Of_Items()
     {
-
         List<LostItem> lostItems = new List<LostItem>
         {
             new LostItem(),
             new LostItem(),
         };
 
-        _lostItemRepoMoq.Setup(r => r.GetAllItems()).Returns(lostItems);
-        IEnumerable<LostItem> actual = _lostItemService.GetAllItems();
+        _lostItemRepoMoq.Setup(r => r.GetLostItems()).Returns(lostItems);
+        IEnumerable<LostItem> actual = _lostItemService.GetLostItems();
 
         Assert.That(actual, Is.EqualTo(lostItems));
     }
+
+    [Test]
+    public void GetOneItem_return_One_Item()
+    {
+        LostItem lostItem = new LostItem();
+        _lostItemRepoMoq.Setup(r => r.GetLostItemById(1)).Returns(lostItem);
+        LostItem actual = _lostItemService.GetLostItemsById(1);
+        Assert.That(actual, Is.EqualTo(lostItem));
+    }
+
 }

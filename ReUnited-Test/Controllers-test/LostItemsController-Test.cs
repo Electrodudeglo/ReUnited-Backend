@@ -30,11 +30,24 @@ public class LostItemsController_Test
             new LostItem()
         };
         
-        _lostItemsServiceMoq.Setup(s => s.GetAllItems()).Returns(lostItems);
+        _lostItemsServiceMoq.Setup(s => s.GetLostItems()).Returns(lostItems);
         
-        OkObjectResult? result = _lostItemController.GetAllItems() as OkObjectResult;
+        OkObjectResult? result = _lostItemController.GetLostItems() as OkObjectResult;
 
         Assert.That(result, Is.TypeOf<OkObjectResult>());
         Assert.That(result.Value, Is.EqualTo(lostItems));
+    }
+
+    [Test]
+    public void GetOneItem_Returns_Ok_With_One_Item()
+    {
+        LostItem oneLostItem = new LostItem();
+
+        _lostItemsServiceMoq.Setup(s => s.GetLostItemsById(1)).Returns(oneLostItem);
+
+        OkObjectResult? result = _lostItemController.GetLostItemById(1) as OkObjectResult;
+
+        Assert.That(result.Value, Is.EqualTo(oneLostItem));
+        Assert.That(result.StatusCode, Is.EqualTo(200));
     }
 }
