@@ -369,3 +369,6 @@ FodyWeavers.xsd
 /ReUnited-Backend/appsettings.Development.json
 /ReUnited-Backend/appsettings.json
 /ReUnited-Backend/appsettings.Development.json
+/ReUnited-Backend/appsettings.json
+/ReUnited-Backend/appsettings.Development.json
+/ReUnited-Backend/appsettings.Production.json
