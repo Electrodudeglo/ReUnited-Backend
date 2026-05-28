@@ -1,9 +1,9 @@
 using ReUnited_Backend.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using ReUnited_Backend.Middleware;
+using ReUnited_Backend;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -19,6 +19,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ExceptionHandlerMiddleware>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<LostItemDbContext>();
+    db.Database.EnsureCreated();
+    SeedData.Initialize(db);
+}
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
