@@ -11,7 +11,7 @@ using ReUnited_Backend.DbContexts;
 namespace ReUnited_Backend.Migrations
 {
     [DbContext(typeof(LostItemDbContext))]
-    [Migration("20260528084555_InitialCreate")]
+    [Migration("20260528123502_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,6 +33,7 @@ namespace ReUnited_Backend.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdditionalInformation")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Category")
@@ -58,8 +59,9 @@ namespace ReUnited_Backend.Migrations
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
 
-                    b.Property<byte[]>("Picture")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("Picture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Postcode")
                         .IsRequired()
