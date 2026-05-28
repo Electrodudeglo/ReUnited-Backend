@@ -2,10 +2,19 @@ using ReUnited_Backend.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using ReUnited_Backend.Middleware;
 using ReUnited_Backend;
+using ReUnited_Backend.Services;
+using ReUnited_Backend.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddScoped<ILostItemService, LostItemService>();
+builder.Services.AddScoped<ILostItemRepository, LostItemRepository>();
+
+
+
 
 // Add services to the container.
 
