@@ -28,8 +28,8 @@ public class LostItemService_Test
             new LostItem(),
         };
 
-        _lostItemRepoMoq.Setup(r => r.GetAllItems()).Returns(lostItems);
-        IEnumerable<LostItem> actual = _lostItemService.GetAllItems();
+        _lostItemRepoMoq.Setup(r => r.GetLostItems()).Returns(lostItems);
+        IEnumerable<LostItem> actual = _lostItemService.GetLostItems();
 
         Assert.That(actual, Is.EqualTo(lostItems));
     }
@@ -38,8 +38,8 @@ public class LostItemService_Test
     public void GetOneItem_return_One_Item()
     {
         LostItem lostItem = new LostItem();
-        _lostItemRepoMoq.Setup(r => r.GetOneItem(1)).Returns(lostItem);
-        LostItem actual = _lostItemService.GetOneItem(1);
+        _lostItemRepoMoq.Setup(r => r.GetLostItemById(1)).Returns(lostItem);
+        LostItem actual = _lostItemService.GetLostItemsById(1);
         Assert.That(actual, Is.EqualTo(lostItem));
     }
 
