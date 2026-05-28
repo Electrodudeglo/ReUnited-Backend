@@ -1,4 +1,5 @@
 ﻿using ReUnited_Backend.DataModels;
+using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Repositories;
 
 namespace ReUnited_Backend.Services
@@ -7,6 +8,7 @@ namespace ReUnited_Backend.Services
     {
         public IEnumerable<LostItem> GetLostItems();
         public LostItem GetLostItemsById(int id);
+        public LostItem UpdateLostItemById(UpdateLostItemDTO lostItem, int id);
     }
 
     public class LostItemService : ILostItemService
@@ -29,5 +31,9 @@ namespace ReUnited_Backend.Services
             return _lostItemRepository.GetLostItemById(id);
         }
 
+        public LostItem? UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
+        {
+            return _lostItemRepository.UpdateLostItemById(lostItem, id);
+        }
     }
 }
