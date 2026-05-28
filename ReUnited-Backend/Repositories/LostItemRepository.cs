@@ -5,18 +5,12 @@
 
     public interface ILostItemRepository
     {
-
-        public IEnumerable<LostItem> GetAllItems();
-            
-
-      
+        public IEnumerable<LostItem> GetAllItems();       
     }
 
     public class LostItemRepository : ILostItemRepository
     {
-
         private readonly LostItemDbContext _dbContext;
-
         public LostItemRepository(LostItemDbContext context)
         {
             _dbContext = context;
