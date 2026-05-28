@@ -22,7 +22,6 @@ public class LostItemService_Test
     [Test]
     public void GetAllItems_Returns_List_Of_Items()
     {
-
         List<LostItem> lostItems = new List<LostItem>
         {
             new LostItem(),
@@ -34,4 +33,14 @@ public class LostItemService_Test
 
         Assert.That(actual, Is.EqualTo(lostItems));
     }
+
+    [Test]
+    public void GetOneItem_return_Ok_With_One_Item()
+    {
+        LostItem lostItem = new LostItem();
+        _lostItemRepoMoq.Setup(r => r.GetOneItem(1)).Returns(lostItem);
+        LostItem actual = _lostItemService.GetOneItem(1);
+        Assert.That(actual, Is.EqualTo(lostItem));
+    }
+
 }
