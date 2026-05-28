@@ -35,7 +35,7 @@ public class LostItemService_Test
     }
 
     [Test]
-    public void GetOneItem_return_Ok_With_One_Item()
+    public void GetOneItem_return_One_Item()
     {
         LostItem lostItem = new LostItem();
         _lostItemRepoMoq.Setup(r => r.GetOneItem(1)).Returns(lostItem);
