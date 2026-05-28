@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ReUnited_Backend.DataModels;
+using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Services;
 
 namespace ReUnited_Backend.Controllers
@@ -22,5 +25,11 @@ namespace ReUnited_Backend.Controllers
         [HttpGet("{id}")]
         public IActionResult GetLostItemById(int id) => Ok(_lostItemService.GetLostItemsById(id));
 
+        [HttpPut("{id}")]
+        public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
+        {
+            var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
+            return Created($"/lostitems", updatedLostItem);
+        }
     }
 }
