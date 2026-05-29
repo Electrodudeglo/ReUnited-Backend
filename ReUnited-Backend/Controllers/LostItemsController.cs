@@ -25,6 +25,11 @@ namespace ReUnited_Backend.Controllers
         [HttpGet("{id}")]
         public IActionResult GetLostItemById(int id) => Ok(_lostItemService.GetLostItemsById(id));
 
+
+        [HttpPost]
+        public IActionResult AddOneLostItem(LostItem lostItem) => CreatedAtAction(nameof(GetLostItemById), new { id = lostItem.Id }, lostItem);
+        
+
         [HttpPut("{id}")]
         public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
         {
