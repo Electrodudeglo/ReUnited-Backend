@@ -50,4 +50,25 @@ public class LostItemsController_Test
         Assert.That(result.Value, Is.EqualTo(oneLostItem));
         Assert.That(result.StatusCode, Is.EqualTo(200));
     }
+    [Test]
+    public void DeleteLostItem_Returns_NoContent()
+    {
+        _lostItemsServiceMoq.Setup(s => s.DeleteLostItemById(1)).Returns(true);
+
+        NoContentResult? result = _lostItemController.DeleteLostItemById(1) as NoContentResult;
+
+        Assert.That(result, Is.TypeOf<NoContentResult>());
+        Assert.That(result.StatusCode, Is.EqualTo(204));
+    }
+
+    [Test]
+    public void DeleteLostItem_Returns_NotFound()
+    {
+        _lostItemsServiceMoq.Setup(s => s.DeleteLostItemById(1)).Returns(false);
+
+        NotFoundObjectResult? result = _lostItemController.DeleteLostItemById(1) as NotFoundObjectResult;
+
+        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
+        Assert.That(result.StatusCode, Is.EqualTo(404));
+    }
 }

@@ -42,5 +42,20 @@ public class LostItemService_Test
         LostItem actual = _lostItemService.GetLostItemsById(1);
         Assert.That(actual, Is.EqualTo(lostItem));
     }
+    [Test]
+    public void DeleteLostItemById_Returns_True_When_Item_Deleted()
+    {
+        _lostItemRepoMoq.Setup(r => r.DeleteLostItemById(1)).Returns(true);
+        bool actual = _lostItemService.DeleteLostItemById(1);
+        Assert.That(actual, Is.True);
+    }
+    [Test]
+    public void DeleteLostItem_Returns_False()
+    {
+        _lostItemRepoMoq.Setup(r => r.DeleteLostItemById(1)).Returns(false);
 
+        bool actual = _lostItemService.DeleteLostItemById(1);
+
+        Assert.That(actual, Is.False);
+    }
 }
