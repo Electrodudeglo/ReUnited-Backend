@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Moq;
 using ReUnited_Backend.DataModels;
+using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Repositories;
 using ReUnited_Backend.Services;
 
@@ -41,6 +42,45 @@ public class LostItemService_Test
         _lostItemRepoMoq.Setup(r => r.GetLostItemById(1)).Returns(lostItem);
         LostItem actual = _lostItemService.GetLostItemsById(1);
         Assert.That(actual, Is.EqualTo(lostItem));
+    }
+
+    [Test]
+    public void UpdateLostItemById_CallsRepositoryOnce()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet",
+            "Lost near station",
+            "wallet.jpg"
+        );
+
+        var lostItem = new LostItem(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet",
+            "Lost near station",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 1))
+            .Returns(lostItem);
+
+        // Act
+        _lostItemService.UpdateLostItemById(dto, 1);
+
+        // Assert
+        _lostItemRepoMoq.Verify(
+            r => r.UpdateLostItemById(dto, 1),
+            Times.Once);
     }
 
 }
