@@ -31,5 +31,17 @@ namespace ReUnited_Backend.Controllers
             var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
             return Created($"/lostitems", updatedLostItem);
         }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteLostItemById(int id)
+        {
+            var deletedLostItem = _lostItemService.DeleteLostItemById(id);
+
+            if (!deletedLostItem)
+            {
+                return NotFound($"Lost item with ID {id} not found");
+            }
+
+            return Ok($"Lost item with ID {id} deleted successfully");
+        }
     }
 }
