@@ -71,6 +71,7 @@ public class LostItemsController_Test
 
         Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
         Assert.That(result.StatusCode, Is.EqualTo(404));
+    }
 
     [Test]
     public void UpdateLostItemById_ReturnsOkResult()
