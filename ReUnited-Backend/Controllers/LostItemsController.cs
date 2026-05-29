@@ -27,14 +27,19 @@ namespace ReUnited_Backend.Controllers
 
 
         [HttpPost]
-        public IActionResult AddOneLostItem(LostItem lostItem) => CreatedAtAction(nameof(GetLostItemById), new { id = lostItem.Id }, lostItem);
+        public IActionResult AddOneLostItem(LostItem lostItem)
+        {
+            LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
+
+            return Created("/lostitems", addLostItem);
+        }
         
 
         [HttpPut("{id}")]
         public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
         {
             var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
-            return Created($"/lostitems", updatedLostItem);
+            return Created("/lostitems", updatedLostItem);
         }
     }
 }

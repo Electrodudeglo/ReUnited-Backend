@@ -36,10 +36,6 @@
         public LostItem AddOneLostItem(LostItem lostItem)
         {
 
-            var getAllLostItems = GetLostItems().Max(l => l.Id) + 1;
-
-            lostItem.Id = getAllLostItems;
-
             _dbContext.Add(lostItem);
             _dbContext.SaveChanges();
             return lostItem;
