@@ -289,5 +289,20 @@ public class LostItemsController_Test
                 statusResult.Value,
                 Is.EqualTo("An error occurred while updating the lost item."));
         });
+        // Act & Assert
+        Assert.Throws<Exception>(() =>
+            _lostItemController.UpdateLostItemById(dto, 1));
+    public void AddOneLostItem_Returns_Ok_With_Added_Item()
+    {
+        var newItem = new LostItem();
+
+        _lostItemsServiceMoq.Setup(n => n.AddOneLostItem(newItem)).Returns(newItem);
+
+        CreatedResult? result = _lostItemController.AddOneLostItem(newItem) as CreatedResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(201, result.StatusCode);
+        Assert.AreEqual(newItem, result.Value);
+
     }
 }

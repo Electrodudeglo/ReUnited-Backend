@@ -240,4 +240,11 @@ public class LostItemService_Test
             _lostItemService.UpdateLostItemById(dto, 1));
     }
 
+    public void AddOneLostItem_Returns_Ok_With_Added_Item()
+    {
+        LostItem addLostItem = new LostItem();
+        _lostItemRepoMoq.Setup(a => a.AddOneLostItem(addLostItem)).Returns(addLostItem);
+        LostItem actual = _lostItemService.AddOneLostItem(addLostItem);
+        Assert.That(actual, Is.EqualTo(addLostItem));
+    }
 }
