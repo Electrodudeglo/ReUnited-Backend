@@ -204,4 +204,29 @@ public class LostItemsController_Test
         Assert.That(result.Value, Is.EqualTo(output));
     }
 
+    [Test]
+    public void UpdateLostItemById_ReturnsNotFound_WhenItemDoesNotExist()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john@test.com",
+            "07123456789",
+            "Wallet",
+            "Black wallet",
+            "Extra info",
+            "wallet.jpg"
+        );
+
+        _lostItemsServiceMoq
+            .Setup(s => s.UpdateLostItemById(dto, 1))
+            .Returns((LostItem)null);
+
+        // Act
+        var result = _lostItemController.UpdateLostItemById(dto, 1);
+
+        // Assert
+        Assert.IsInstanceOf<NotFoundResult>(result);
+    }
 }
