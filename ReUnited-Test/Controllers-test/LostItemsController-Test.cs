@@ -255,4 +255,28 @@ public class LostItemsController_Test
         // Assert
         Assert.IsInstanceOf<BadRequestObjectResult>(result);
     }
+
+    [Test]
+    public void UpdateLostItemById_ReturnsStatusCode500_WhenExceptionOccurs()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john@test.com",
+            "07123456789",
+            "Wallet",
+            "Black wallet",
+            "Extra info",
+            "wallet.jpg"
+        );
+
+        _lostItemsServiceMoq
+            .Setup(s => s.UpdateLostItemById(dto, 1))
+            .Throws(new Exception());
+
+        // Act & Assert
+        Assert.Throws<Exception>(() =>
+            _lostItemController.UpdateLostItemById(dto, 1));
+    }
 }
