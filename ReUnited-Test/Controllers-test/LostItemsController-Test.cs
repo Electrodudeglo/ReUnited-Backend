@@ -128,4 +128,42 @@ public class LostItemsController_Test
             Times.Once());
     }
 
+    [Test]
+    public void UpdateLostItemById_ReturnsStatusCode201()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet with several bank cards inside.",
+            "Lost near Victoria Station on Tuesday evening.",
+            "wallet-image.jpg"
+        );
+
+        var output = new LostItem(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet with several bank cards inside.",
+            "Lost near Victoria Station on Tuesday evening.",
+            "wallet-image.jpg"
+        );
+
+        _lostItemsServiceMoq
+            .Setup(s => s.UpdateLostItemById(dto, 1))
+            .Returns(output);
+
+        // Act
+        CreatedResult result = (CreatedResult)_lostItemController
+            .UpdateLostItemById(dto, 1);
+
+        // Assert
+        Assert.That(result.StatusCode, Is.EqualTo(201));
+    }
+
 }
