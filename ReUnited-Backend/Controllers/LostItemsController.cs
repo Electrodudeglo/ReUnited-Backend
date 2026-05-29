@@ -36,9 +36,9 @@ namespace ReUnited_Backend.Controllers
 
                 if (updatedLostItem == null) { return NotFound(); }
 
-                return Created($"/lostitems", updatedLostItem);
+                return Ok(updatedLostItem);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "An error occurred while updating the lost item.");
             }
