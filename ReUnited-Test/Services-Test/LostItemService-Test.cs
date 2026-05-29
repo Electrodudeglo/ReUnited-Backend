@@ -120,4 +120,31 @@ public class LostItemService_Test
         Assert.That(result, Is.EqualTo(expected));
     }
 
+    [Test]
+    public void UpdateLostItemById_ReturnsNull_WhenRepositoryReturnsNull()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet",
+            "Lost near station",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 1))
+            .Returns((LostItem)null);
+
+        // Act
+        var result = _lostItemService.UpdateLostItemById(dto, 1);
+
+        // Assert
+        Assert.That(result, Is.Null);
+
+    }
+
 }
