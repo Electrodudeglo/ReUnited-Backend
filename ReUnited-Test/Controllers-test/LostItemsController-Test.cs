@@ -89,4 +89,43 @@ public class LostItemsController_Test
         Assert.That(result, Is.InstanceOf<CreatedResult>());
     }
 
+    [Test]
+    public void UpdateLostItemById_CallsServiceOnce()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet with several bank cards inside.",
+            "Lost near Victoria Station on Tuesday evening.",
+            "wallet-image.jpg"
+        );
+
+        var output = new LostItem(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet with several bank cards inside.",
+            "Lost near Victoria Station on Tuesday evening.",
+            "wallet-image.jpg"
+        );
+
+        _lostItemsServiceMoq
+            .Setup(s => s.UpdateLostItemById(dto, 1))
+            .Returns(output);
+
+        // Act
+        _lostItemController.UpdateLostItemById(dto, 1);
+
+        // Assert
+        _lostItemsServiceMoq.Verify(
+            service => service.UpdateLostItemById(dto, 1),
+            Times.Once());
+    }
+
 }
