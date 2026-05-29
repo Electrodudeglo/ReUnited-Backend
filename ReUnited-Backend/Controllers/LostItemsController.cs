@@ -38,8 +38,20 @@ namespace ReUnited_Backend.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
         {
-            var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
-            return Created("/lostitems", updatedLostItem);
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            try
+            {
+                var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
+
+                if (updatedLostItem == null) { return NotFound(); }
+
+                return Ok(updatedLostItem);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while updating the lost item.");
+            }
         }
     }
 }
