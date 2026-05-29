@@ -3,12 +3,15 @@
     using DbContexts;
     using DataModels;
     using ReUnited_Backend.DTOs;
+    using Microsoft.AspNetCore.Http.HttpResults;
 
     public interface ILostItemRepository
     {
         public IEnumerable<LostItem> GetLostItems();
         public LostItem? GetLostItemById(int id);
         public LostItem? UpdateLostItemById(UpdateLostItemDTO lostItem, int id);
+
+        public LostItem AddOneLostItem(LostItem lostItem);
     }
 
     public class LostItemRepository : ILostItemRepository
@@ -28,6 +31,15 @@
         public LostItem? GetLostItemById(int id)
         {
             return _dbContext.LostItems.FirstOrDefault(l => l.Id == id);
+        }
+
+        public LostItem AddOneLostItem(LostItem lostItem)
+        {
+
+            _dbContext.Add(lostItem);
+            _dbContext.SaveChanges();
+            return lostItem;
+   
         }
 
         public LostItem? UpdateLostItemById(UpdateLostItemDTO dto, int id)
