@@ -41,7 +41,7 @@ namespace ReUnited_Backend.Controllers
                 return NotFound($"Lost item with ID {id} not found");
             }
 
-            return Ok($"Lost item with ID {id} deleted successfully");
+            return NoContent();
         }
     }
 }
