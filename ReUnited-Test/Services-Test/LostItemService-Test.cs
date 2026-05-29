@@ -147,4 +147,47 @@ public class LostItemService_Test
 
     }
 
+    [Test]
+    public void UpdateLostItemById_PassesCorrectArgumentsToRepository()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "Manchester",
+            "M11AA",
+            "test@test.com",
+            "07123456789",
+            "Phone",
+            "iPhone 15",
+            "Blue case",
+            "phone.jpg"
+        );
+
+        var lostItem = new LostItem(
+            "Manchester",
+            "M11AA",
+            "test@test.com",
+            "07123456789",
+            "Phone",
+            "iPhone 15",
+            "Blue case",
+            "phone.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 5))
+            .Returns(lostItem);
+
+        // Act
+        _lostItemService.UpdateLostItemById(dto, 5);
+
+        // Assert
+        _lostItemRepoMoq.Verify(r =>
+            r.UpdateLostItemById(
+                It.Is<UpdateLostItemDTO>(x =>
+                    x.City == "Manchester" &&
+                    x.Category == "Phone"),
+                5),
+            Times.Once);
+    }
+
 }
