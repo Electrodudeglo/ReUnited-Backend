@@ -1,9 +1,10 @@
-using ReUnited_Backend.DbContexts;
 using Microsoft.EntityFrameworkCore;
-using ReUnited_Backend.Middleware;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ReUnited_Backend;
-using ReUnited_Backend.Services;
+using ReUnited_Backend.DbContexts;
+using ReUnited_Backend.Middleware;
 using ReUnited_Backend.Repositories;
+using ReUnited_Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<ExceptionHandlerMiddleware>();
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<LostItemDbContext>();
 
 var app = builder.Build();
 
@@ -50,5 +54,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHealthChecks("/health");
 
 app.Run();
