@@ -10,8 +10,6 @@ namespace ReUnited_Backend.Services
         public LostItem GetLostItemsById(int id);
         public LostItem UpdateLostItemById(UpdateLostItemDTO lostItem, int id);
         public bool DeleteLostItemById(int id);
-        public LostItem? GetLostItemsById(int id);
-        public LostItem? UpdateLostItemById(UpdateLostItemDTO lostItem, int id);
         public LostItem AddOneLostItem(LostItem lostItem);
     }
 
