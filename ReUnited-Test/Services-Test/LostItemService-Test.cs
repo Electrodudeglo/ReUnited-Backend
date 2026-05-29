@@ -216,4 +216,28 @@ public class LostItemService_Test
         Assert.That(result, Is.Null);
     }
 
+    [Test]
+    public void UpdateLostItemById_WhenRepositoryThrows_ExceptionIsThrown()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john@test.com",
+            "07123456789",
+            "Wallet",
+            "Wallet",
+            "Extra info",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 1))
+            .Throws(new Exception("Database failure"));
+
+        // Act & Assert
+        Assert.Throws<Exception>(() =>
+            _lostItemService.UpdateLostItemById(dto, 1));
+    }
+
 }
