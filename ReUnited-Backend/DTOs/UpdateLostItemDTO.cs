@@ -34,5 +34,25 @@ namespace ReUnited_Backend.DTOs
         [Required]
         public string Picture { get; set; } = string.Empty;
 
+        public UpdateLostItemDTO(
+            string city,
+            string postcode,
+            string email,
+            string phoneNumber,
+            string category,
+            string itemDescription,
+            string additionalInformation,
+            string picture)
+        {
+            City = city;
+            Postcode = postcode;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Category = category;
+            ItemDescription = itemDescription;
+            AdditionalInformation = additionalInformation;
+            Picture = picture;
+        }
+
     }
 }

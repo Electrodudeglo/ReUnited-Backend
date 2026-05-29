@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Moq;
 using ReUnited_Backend.DataModels;
+using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Repositories;
 using ReUnited_Backend.Services;
 
@@ -57,5 +58,207 @@ public class LostItemService_Test
         bool actual = _lostItemService.DeleteLostItemById(1);
 
         Assert.That(actual, Is.False);
+    [Test]
+    public void UpdateLostItemById_CallsRepositoryOnce()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet",
+            "Lost near station",
+            "wallet.jpg"
+        );
+
+        var lostItem = new LostItem(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet",
+            "Lost near station",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 1))
+            .Returns(lostItem);
+
+        // Act
+        _lostItemService.UpdateLostItemById(dto, 1);
+
+        // Assert
+        _lostItemRepoMoq.Verify(
+            r => r.UpdateLostItemById(dto, 1),
+            Times.Once);
+    }
+
+    [Test]
+    public void UpdateLostItemById_ReturnsUpdatedLostItem()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet",
+            "Lost near station",
+            "wallet.jpg"
+        );
+
+        var expected = new LostItem(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet",
+            "Lost near station",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 1))
+            .Returns(expected);
+
+        // Act
+        var result = _lostItemService.UpdateLostItemById(dto, 1);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void UpdateLostItemById_ReturnsNull_WhenRepositoryReturnsNull()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john.doe@example.com",
+            "07123456789",
+            "Wallet",
+            "Black leather wallet",
+            "Lost near station",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 1))
+            .Returns((LostItem)null);
+
+        // Act
+        var result = _lostItemService.UpdateLostItemById(dto, 1);
+
+        // Assert
+        Assert.That(result, Is.Null);
+
+    }
+
+    [Test]
+    public void UpdateLostItemById_PassesCorrectArgumentsToRepository()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "Manchester",
+            "M11AA",
+            "test@test.com",
+            "07123456789",
+            "Phone",
+            "iPhone 15",
+            "Blue case",
+            "phone.jpg"
+        );
+
+        var lostItem = new LostItem(
+            "Manchester",
+            "M11AA",
+            "test@test.com",
+            "07123456789",
+            "Phone",
+            "iPhone 15",
+            "Blue case",
+            "phone.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 5))
+            .Returns(lostItem);
+
+        // Act
+        _lostItemService.UpdateLostItemById(dto, 5);
+
+        // Assert
+        _lostItemRepoMoq.Verify(r =>
+            r.UpdateLostItemById(
+                It.Is<UpdateLostItemDTO>(x =>
+                    x.City == "Manchester" &&
+                    x.Category == "Phone"),
+                5),
+            Times.Once);
+    }
+
+    [Test]
+    public void UpdateLostItemById_WithInvalidId_ReturnsNull()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john@test.com",
+            "07123456789",
+            "Wallet",
+            "Wallet",
+            "Extra info",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, -1))
+            .Returns((LostItem)null);
+
+        // Act
+        var result = _lostItemService.UpdateLostItemById(dto, -1);
+
+        // Assert
+        Assert.That(result, Is.Null);
+    }
+
+    [Test]
+    public void UpdateLostItemById_WhenRepositoryThrows_ExceptionIsThrown()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john@test.com",
+            "07123456789",
+            "Wallet",
+            "Wallet",
+            "Extra info",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, 1))
+            .Throws(new Exception("Database failure"));
+
+        // Act & Assert
+        Assert.Throws<Exception>(() =>
+            _lostItemService.UpdateLostItemById(dto, 1));
+    }
+
+    public void AddOneLostItem_Returns_Ok_With_Added_Item()
+    {
+        LostItem addLostItem = new LostItem();
+        _lostItemRepoMoq.Setup(a => a.AddOneLostItem(addLostItem)).Returns(addLostItem);
+        LostItem actual = _lostItemService.AddOneLostItem(addLostItem);
+        Assert.That(actual, Is.EqualTo(addLostItem));
     }
 }

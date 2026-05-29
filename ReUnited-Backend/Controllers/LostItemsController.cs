@@ -25,11 +25,33 @@ namespace ReUnited_Backend.Controllers
         [HttpGet("{id}")]
         public IActionResult GetLostItemById(int id) => Ok(_lostItemService.GetLostItemsById(id));
 
+
+        [HttpPost]
+        public IActionResult AddOneLostItem(LostItem lostItem)
+        {
+            LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
+
+            return Created("/lostitems", addLostItem);
+        }
+        
+
         [HttpPut("{id}")]
         public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
         {
-            var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
-            return Created($"/lostitems", updatedLostItem);
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            try
+            {
+                var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
+
+                if (updatedLostItem == null) { return NotFound(); }
+
+                return Ok(updatedLostItem);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while updating the lost item.");
+            }
         }
         [HttpDelete("{id}")]
         public IActionResult DeleteLostItemById(int id)
