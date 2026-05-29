@@ -3,6 +3,7 @@
     using DbContexts;
     using DataModels;
     using ReUnited_Backend.DTOs;
+    using Microsoft.AspNetCore.Http.HttpResults;
 
     public interface ILostItemRepository
     {
@@ -28,6 +29,19 @@
         public LostItem? GetLostItemById(int id)
         {
             return _dbContext.LostItems.FirstOrDefault(l => l.Id == id);
+        }
+
+        public LostItem AddOneLostItem(LostItem lostItem)
+        {
+
+            var getAllLostItems = GetLostItems().Max(l => l.Id) + 1;
+
+            lostItem.Id = getAllLostItems;
+
+            _dbContext.Add(lostItem);
+            _dbContext.SaveChanges();
+            return lostItem;
+   
         }
 
         public LostItem? UpdateLostItemById(UpdateLostItemDTO dto, int id)
