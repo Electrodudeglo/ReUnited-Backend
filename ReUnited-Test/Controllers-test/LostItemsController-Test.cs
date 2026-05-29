@@ -289,9 +289,9 @@ public class LostItemsController_Test
                 statusResult.Value,
                 Is.EqualTo("An error occurred while updating the lost item."));
         });
-        // Act & Assert
-        Assert.Throws<Exception>(() =>
-            _lostItemController.UpdateLostItemById(dto, 1));
+    }
+
+    [Test]
     public void AddOneLostItem_Returns_Ok_With_Added_Item()
     {
         var newItem = new LostItem();
