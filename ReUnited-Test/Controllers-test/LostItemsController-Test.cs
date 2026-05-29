@@ -229,4 +229,30 @@ public class LostItemsController_Test
         // Assert
         Assert.IsInstanceOf<NotFoundResult>(result);
     }
+
+    [Test]
+    public void UpdateLostItemById_ReturnsBadRequest_WhenModelStateIsInvalid()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "",
+            "",
+            "invalid-email",
+            "123",
+            "",
+            "",
+            "",
+            ""
+        );
+
+        _lostItemController.ModelState.AddModelError(
+            "Category",
+            "Category is required");
+
+        // Act
+        var result = _lostItemController.UpdateLostItemById(dto, 1);
+
+        // Assert
+        Assert.IsInstanceOf<BadRequestObjectResult>(result);
+    }
 }
