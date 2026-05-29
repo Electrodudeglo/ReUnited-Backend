@@ -25,11 +25,21 @@ namespace ReUnited_Backend.Controllers
         [HttpGet("{id}")]
         public IActionResult GetLostItemById(int id) => Ok(_lostItemService.GetLostItemsById(id));
 
+
+        [HttpPost]
+        public IActionResult AddOneLostItem(LostItem lostItem)
+        {
+            LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
+
+            return Created("/lostitems", addLostItem);
+        }
+        
+
         [HttpPut("{id}")]
         public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
         {
             var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
-            return Created($"/lostitems", updatedLostItem);
+            return Created("/lostitems", updatedLostItem);
         }
     }
 }

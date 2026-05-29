@@ -50,4 +50,19 @@ public class LostItemsController_Test
         Assert.That(result.Value, Is.EqualTo(oneLostItem));
         Assert.That(result.StatusCode, Is.EqualTo(200));
     }
+
+    [Test]
+    public void AddOneLostItem_Returns_Ok_With_Added_Item()
+    {
+        var newItem = new LostItem();
+
+        _lostItemsServiceMoq.Setup(n => n.AddOneLostItem(newItem)).Returns(newItem);
+
+        CreatedResult? result = _lostItemController.AddOneLostItem(newItem) as CreatedResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(201, result.StatusCode);
+        Assert.AreEqual(newItem, result.Value);
+
+    }
 }
