@@ -53,5 +53,17 @@ namespace ReUnited_Backend.Controllers
                 return StatusCode(500, "An error occurred while updating the lost item.");
             }
         }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteLostItemById(int id)
+        {
+            var deletedLostItem = _lostItemService.DeleteLostItemById(id);
+
+            if (!deletedLostItem)
+            {
+                return NotFound($"Lost item with ID {id} not found");
+            }
+
+            return NoContent();
+        }
     }
 }
