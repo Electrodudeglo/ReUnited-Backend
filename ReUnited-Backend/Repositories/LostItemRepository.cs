@@ -10,6 +10,8 @@
         public IEnumerable<LostItem> GetLostItems();
         public LostItem? GetLostItemById(int id);
         public LostItem? UpdateLostItemById(UpdateLostItemDTO lostItem, int id);
+
+        public LostItem AddOneLostItem(LostItem lostItem);
     }
 
     public class LostItemRepository : ILostItemRepository
