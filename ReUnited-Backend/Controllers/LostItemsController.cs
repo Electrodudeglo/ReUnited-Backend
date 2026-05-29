@@ -28,12 +28,20 @@ namespace ReUnited_Backend.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            try
             {
                 var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
+
+                if (updatedLostItem == null) { return NotFound(); }
+
                 return Created($"/lostitems", updatedLostItem);
             }
-            return BadRequest();
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while updating the lost item.");
+            }
         }
     }
 }
