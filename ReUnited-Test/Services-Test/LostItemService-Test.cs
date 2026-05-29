@@ -190,4 +190,30 @@ public class LostItemService_Test
             Times.Once);
     }
 
+    [Test]
+    public void UpdateLostItemById_WithInvalidId_ReturnsNull()
+    {
+        // Arrange
+        var dto = new UpdateLostItemDTO(
+            "London",
+            "SW1A1AA",
+            "john@test.com",
+            "07123456789",
+            "Wallet",
+            "Wallet",
+            "Extra info",
+            "wallet.jpg"
+        );
+
+        _lostItemRepoMoq
+            .Setup(r => r.UpdateLostItemById(dto, -1))
+            .Returns((LostItem)null);
+
+        // Act
+        var result = _lostItemService.UpdateLostItemById(dto, -1);
+
+        // Assert
+        Assert.That(result, Is.Null);
+    }
+
 }
