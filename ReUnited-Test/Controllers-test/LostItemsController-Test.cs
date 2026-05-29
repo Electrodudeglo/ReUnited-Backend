@@ -53,7 +53,7 @@ public class LostItemsController_Test
     }
 
     [Test]
-    public void UpdateLostItemById_ReturnsCreatedResult()
+    public void UpdateLostItemById_ReturnsOkResult()
     {
         // Arrange
         var dto = new UpdateLostItemDTO(
@@ -86,7 +86,7 @@ public class LostItemsController_Test
         var result = _lostItemController.UpdateLostItemById(dto, 1);
 
         // Assert
-        Assert.That(result, Is.InstanceOf<CreatedResult>());
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
     }
 
     [Test]
@@ -129,7 +129,7 @@ public class LostItemsController_Test
     }
 
     [Test]
-    public void UpdateLostItemById_ReturnsStatusCode201()
+    public void UpdateLostItemById_ReturnsStatusCode200()
     {
         // Arrange
         var dto = new UpdateLostItemDTO(
@@ -159,11 +159,11 @@ public class LostItemsController_Test
             .Returns(output);
 
         // Act
-        CreatedResult result = (CreatedResult)_lostItemController
+        OkObjectResult result = (OkObjectResult)_lostItemController
             .UpdateLostItemById(dto, 1);
 
         // Assert
-        Assert.That(result.StatusCode, Is.EqualTo(201));
+        Assert.That(result.StatusCode, Is.EqualTo(200));
     }
 
     [Test]
@@ -197,7 +197,7 @@ public class LostItemsController_Test
             .Returns(output);
 
         // Act
-        CreatedResult result = (CreatedResult)_lostItemController
+        OkObjectResult result = (OkObjectResult)_lostItemController
             .UpdateLostItemById(dto, 1);
 
         // Assert
@@ -257,7 +257,7 @@ public class LostItemsController_Test
     }
 
     [Test]
-    public void UpdateLostItemById_ReturnsStatusCode500_WhenExceptionOccurs()
+    public void UpdateLostItemById_Returns500_WhenExceptionOccurs()
     {
         // Arrange
         var dto = new UpdateLostItemDTO(
@@ -275,6 +275,20 @@ public class LostItemsController_Test
             .Setup(s => s.UpdateLostItemById(dto, 1))
             .Throws(new Exception());
 
+        // Act
+        var result = _lostItemController.UpdateLostItemById(dto, 1);
+
+        // Assert
+        var statusResult = (ObjectResult)result;
+
+        Assert.That(statusResult, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(statusResult.StatusCode, Is.EqualTo(500));
+            Assert.That(
+                statusResult.Value,
+                Is.EqualTo("An error occurred while updating the lost item."));
+        });
         // Act & Assert
         Assert.Throws<Exception>(() =>
             _lostItemController.UpdateLostItemById(dto, 1));
