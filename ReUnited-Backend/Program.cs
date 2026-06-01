@@ -36,18 +36,20 @@ builder.Services.AddHealthChecks()
 
 var key = Encoding.UTF8.GetBytes("a-string-secret-at-least-256-bits-long");
 
-//{
-/*"sub": "1234567890",
+// JWT building:
+
+/*{
+    "sub": "1234567890",
   "name": "John",
-  "admin": true,
   "iss": "ReUnite",
   "aud": "ReUnite",
   "iat": 1780304665,
-  "exp": 1811840665
+  "exp": 1811840665,
+  "roles": "admin"
 }*/
 
 // JWT
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4iLCJhZG1pbiI6dHJ1ZSwiaXNzIjoiUmVVbml0ZSIsImF1ZCI6IlJlVW5pdGUiLCJpYXQiOjE3ODAzMDQ2NjUsImV4cCI6MTgxMTg0MDY2NX0.WD1WZRVA4sAziA-SeOMihgY34NElzZKTaSd9kzgTjfY
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4iLCJpc3MiOiJSZVVuaXRlIiwiYXVkIjoiUmVVbml0ZSIsImlhdCI6MTc4MDMwNDY2NSwiZXhwIjoxODExODQwNjY1LCJyb2xlcyI6ImFkbWluIn0.mqL1yD0G7cGhZ6uReIzO49lg-tlBaDD4vz-PWg1CSHk
 
 
 
