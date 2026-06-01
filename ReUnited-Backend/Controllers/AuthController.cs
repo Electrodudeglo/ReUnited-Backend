@@ -26,13 +26,16 @@ namespace ReUnited_Backend.Controllers
         [HttpPost("token")]
         public async Task<IActionResult> GenerateToken([FromBody] LoginModel login)
         {
-            //if (login.Username != "admin" || login.Password != "password123") return Unauthorized();
+            //if (login.Username != "user@example.com" || login.Password != "password123") return Unauthorized();
+
 
             var supabase = new Client(
                 _config["Supabase:URL"],
                 _config["Supabase:ApiKey"],
                 new SupabaseOptions()
             );
+
+            
             
 
 
@@ -40,13 +43,20 @@ namespace ReUnited_Backend.Controllers
 
             var session = await supabase.Auth.SignIn(login.Username, login.Password);
 
-            var claims = new[]
+            /*var claims = new[]
             {
                 new Claim(ClaimTypes.Name, login.Username),
                 new Claim(ClaimTypes.Role, "admin")
-            };
+            };*/
 
             return Ok(new { token = session?.AccessToken });
+        }
+
+        [HttpGet("debug-auth")]
+        public IActionResult DebugAuth()
+        {
+            var authHeader = Request.Headers["Authorization"].ToString();
+            return Ok(new { received = authHeader });
         }
     }
 }
