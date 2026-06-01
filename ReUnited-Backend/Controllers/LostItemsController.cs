@@ -18,7 +18,8 @@ namespace ReUnited_Backend.Controllers
             _lostItemService = lostItemService;
         }
 
-
+        //temp
+        [Authorize]
         [HttpGet]
         public IActionResult GetLostItems() => Ok(_lostItemService.GetLostItems());
 
