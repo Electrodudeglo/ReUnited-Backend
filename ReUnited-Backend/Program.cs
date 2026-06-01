@@ -7,7 +7,9 @@ using ReUnited_Backend.DbContexts;
 using ReUnited_Backend.Middleware;
 using ReUnited_Backend.Repositories;
 using ReUnited_Backend.Services;
+using Supabase;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
