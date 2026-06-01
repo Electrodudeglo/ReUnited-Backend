@@ -1,10 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using ReUnited_Backend;
 using ReUnited_Backend.DbContexts;
 using ReUnited_Backend.Middleware;
 using ReUnited_Backend.Repositories;
 using ReUnited_Backend.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +33,40 @@ builder.Services.AddTransient<ExceptionHandlerMiddleware>();
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<LostItemDbContext>();
+
+var key = Encoding.UTF8.GetBytes("a-string-secret-at-least-256-bits-long");
+
+// JWT building:
+
+/*{
+    "sub": "1234567890",
+  "name": "John",
+  "iss": "ReUnite",
+  "aud": "ReUnite",
+  "iat": 1780304665,
+  "exp": 1811840665,
+  "roles": "admin"
+}*/
+
+// JWT
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4iLCJpc3MiOiJSZVVuaXRlIiwiYXVkIjoiUmVVbml0ZSIsImlhdCI6MTc4MDMwNDY2NSwiZXhwIjoxODExODQwNjY1LCJyb2xlcyI6ImFkbWluIn0.mqL1yD0G7cGhZ6uReIzO49lg-tlBaDD4vz-PWg1CSHk
+
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "ReUnite",
+            ValidAudience = "ReUnite",
+            IssuerSigningKey = new SymmetricSecurityKey(key) // The key to validate the token
+        };
+    });
 
 var app = builder.Build();
 

@@ -18,7 +18,6 @@ namespace ReUnited_Backend.Controllers
             _lostItemService = lostItemService;
         }
 
-
         [HttpGet]
         public IActionResult GetLostItems() => Ok(_lostItemService.GetLostItems());
 
@@ -53,6 +52,8 @@ namespace ReUnited_Backend.Controllers
                 return StatusCode(500, "An error occurred while updating the lost item.");
             }
         }
+
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteLostItemById(int id)
         {
