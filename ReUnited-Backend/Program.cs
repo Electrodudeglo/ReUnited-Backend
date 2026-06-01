@@ -36,8 +36,20 @@ builder.Services.AddHealthChecks()
 
 var key = Encoding.UTF8.GetBytes("a-string-secret-at-least-256-bits-long");
 
+//{
+/*"sub": "1234567890",
+  "name": "John",
+  "admin": true,
+  "iss": "ReUnite",
+  "aud": "ReUnite",
+  "iat": 1780304665,
+  "exp": 1811840665
+}*/
+
 // JWT
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwicm9sZXMiOiJhZG1pbiJ9.q-i-8n874RfZ33m_MrjesTtZabz8_9zPdBdhokDqmkY
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4iLCJhZG1pbiI6dHJ1ZSwiaXNzIjoiUmVVbml0ZSIsImF1ZCI6IlJlVW5pdGUiLCJpYXQiOjE3ODAzMDQ2NjUsImV4cCI6MTgxMTg0MDY2NX0.WD1WZRVA4sAziA-SeOMihgY34NElzZKTaSd9kzgTjfY
+
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

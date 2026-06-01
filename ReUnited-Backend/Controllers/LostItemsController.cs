@@ -19,7 +19,7 @@ namespace ReUnited_Backend.Controllers
         }
 
         //temp
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public IActionResult GetLostItems() => Ok(_lostItemService.GetLostItems());
 
