@@ -22,7 +22,9 @@ builder.Services.AddScoped<ILostItemRepository, LostItemRepository>();
 
 // Add services to the container.
 
-builder.Services.AddDbContext<LostItemDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<LostItemDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("SupabaseDb")));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
