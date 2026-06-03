@@ -42,6 +42,9 @@ namespace ReUnited_Backend.Controllers
             await supabase.InitializeAsync();
 
             var session = await supabase.Auth.SignIn(login.Username, login.Password);
+            /*session.ProviderRefreshToken
+                session.RefreshToken
+                session.ProviderToken*/
 
             /*var claims = new[]
             {

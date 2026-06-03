@@ -56,7 +56,7 @@ builder.Services.AddHealthChecks()
 // JWT
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4iLCJpc3MiOiJSZVVuaXRlIiwiYXVkIjoiUmVVbml0ZSIsImlhdCI6MTc4MDMwNDY2NSwiZXhwIjoxODExODQwNjY1LCJyb2xlcyI6ImFkbWluIn0.mqL1yD0G7cGhZ6uReIzO49lg-tlBaDD4vz-PWg1CSHk
 
-var jwtKey = builder.Configuration["Supabase:JWTKey"];
+//var jwtKey = builder.Configuration["Supabase:JWTKey"];
 
 
 builder.Services
@@ -71,10 +71,8 @@ builder.Services
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Supabase:Issuer"],
             ValidAudience = builder.Configuration["Supabase:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 
