@@ -58,23 +58,60 @@ builder.Services.AddHealthChecks()
 
 //var jwtKey = builder.Configuration["Supabase:JWTKey"];
 
+var supabaseURL = builder.Configuration["Supabase:URL"];
+// The Anon key is strictly for the Supabase Client (PostgREST/Realtime)
+var supabaseAnonKey = builder.Configuration["Supabase:Key"];
+// For ES256, ValidIssuer is typically your project URL or URL + "/auth/v1"
+var supabaseIssuer = builder.Configuration["Supabase:Issuer"];
+var supabaseAudience = builder.Configuration["Supabase:Audience"];
+
+
+
+var sOptions = new Supabase.SupabaseOptions
+{
+    AutoConnectRealtime = true
+};
+var supabaseClient = new Supabase.Client(supabaseURL, supabaseAnonKey, sOptions);
+await supabaseClient.InitializeAsync();
+builder.Services.AddSingleton(supabaseClient);
+
+//var supabaseSignatureKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(supabaseAnonKey));
 
 builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
-        options.Authority = builder.Configuration["Supabase:Issuer"];
-
+        options.Authority = supabaseIssuer;
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            ValidateIssuerSigningKey = true,
             ValidateIssuer = true,
+            ValidIssuer = supabaseIssuer,
             ValidateAudience = true,
+            ValidAudience = supabaseAudience,
             ValidateLifetime = true,
-            ValidIssuer = builder.Configuration["Supabase:Issuer"],
-            ValidAudience = builder.Configuration["Supabase:Audience"],
+
+            IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
+            {
+                // Construct the exact URL to Supabase's JWKS endpoint
+                var jwksUrl = $"{supabaseIssuer}/.well-known/jwks.json";
+
+                // Note: In production, you should cache this HttpClient request
+                using var client = new HttpClient();
+                var jwksJson = client.GetStringAsync(jwksUrl).Result;
+                var jwks = new JsonWebKeySet(jwksJson);
+
+                return jwks.GetSigningKeys();
+            }
         };
     });
+
+
 
 // temp, delete later
 builder.Services.AddSwaggerGen(c =>

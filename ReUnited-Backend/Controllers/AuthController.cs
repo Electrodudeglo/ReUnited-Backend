@@ -5,6 +5,15 @@ using System.Security.Claims;
 using System.Text;
 using Supabase;
 
+public record AuthToken(
+    string? id,
+    string? accessToken,
+    string? refreshToken,
+    string? expiresIn,
+    string? expiresAt,
+    string? tokenType
+);
+
 public class LoginModel
 {
     public string Username { get; set; } = String.Empty;
@@ -31,7 +40,7 @@ namespace ReUnited_Backend.Controllers
 
             var supabase = new Client(
                 _config["Supabase:URL"],
-                _config["Supabase:ApiKey"],
+                _config["Supabase:Key"],
                 new SupabaseOptions()
             );
 
@@ -39,7 +48,7 @@ namespace ReUnited_Backend.Controllers
             
 
 
-            await supabase.InitializeAsync();
+            //await supabase.InitializeAsync();
 
             var session = await supabase.Auth.SignIn(login.Username, login.Password);
             /*session.ProviderRefreshToken
@@ -52,7 +61,17 @@ namespace ReUnited_Backend.Controllers
                 new Claim(ClaimTypes.Role, "admin")
             };*/
 
-            return Ok(new { token = session?.AccessToken });
+            var authToken = new AuthToken
+            (
+                id: session?.User?.Id,
+                accessToken: session?.AccessToken,
+                refreshToken: session?.RefreshToken,
+                expiresIn: session?.ExpiresIn.ToString(),
+                expiresAt: session?.ExpiresAt().ToString(),
+                tokenType: session?.TokenType
+            );
+
+            return Ok(authToken);
         }
 
         [HttpGet("debug-auth")]
