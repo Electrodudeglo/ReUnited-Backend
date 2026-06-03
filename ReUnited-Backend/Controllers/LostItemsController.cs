@@ -53,7 +53,7 @@ namespace ReUnited_Backend.Controllers
             }
         }
 
-        [Authorize]
+        //[Authorize]
         //[Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteLostItemById(int id)
