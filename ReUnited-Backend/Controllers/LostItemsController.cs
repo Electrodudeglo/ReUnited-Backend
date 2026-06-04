@@ -31,6 +31,11 @@ namespace ReUnited_Backend.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> AddOneLostItem([FromForm] CreateLostItemDTO request)
         {
+            if (request.Image is null)
+            {
+                return BadRequest("An image is required");
+            }
+            
             await using var stream = request.Image.OpenReadStream();
 
             var storagePath =
