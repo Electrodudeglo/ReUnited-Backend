@@ -23,8 +23,19 @@ builder.Services.AddScoped<ILostItemRepository, LostItemRepository>();
 
 builder.Services.AddHttpClient();
 
-builder.Services.Configure<SupabaseSettings>(
-    builder.Configuration.GetSection("Supabase"));
+builder.Services
+    .AddOptions<SupabaseSettings>()
+    .Bind(builder.Configuration.GetSection("Supabase"))
+    .Validate(settings =>
+        !string.IsNullOrWhiteSpace(settings.Url),
+        "Supabase Url is required")
+    .Validate(settings =>
+        !string.IsNullOrWhiteSpace(settings.Bucket),
+        "Supabase Bucket is required")
+    .Validate(settings =>
+        !string.IsNullOrWhiteSpace(settings.ApiKey),
+        "Supabase ApiKey is required")
+    .ValidateOnStart();
 
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 builder.Services.AddScoped<ImageUrlService>();
