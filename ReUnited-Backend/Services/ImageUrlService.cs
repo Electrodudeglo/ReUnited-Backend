@@ -7,9 +7,9 @@ namespace ReUnited_Backend.Services
         private readonly SupabaseSettings _settings;
 
         public ImageUrlService(
-            IConfiguration configuration)
+            IOptions<SupabaseSettings> options)
         {
-            _configuration = configuration;
+            _settings = options.Value;
         }
 
         public string GetPublicUrl(
