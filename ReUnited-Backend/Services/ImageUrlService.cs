@@ -2,5 +2,7 @@
 {
     public class ImageUrlService
     {
+        private readonly IConfiguration _configuration;
+
     }
 }
