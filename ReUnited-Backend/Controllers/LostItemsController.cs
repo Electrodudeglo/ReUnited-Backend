@@ -13,6 +13,20 @@ namespace ReUnited_Backend.Controllers
     {
         private readonly ILostItemService _lostItemService;
         private readonly IImageStorageService _imageStorageService;
+        private static readonly string[] AllowedExtensions =
+        {
+            ".jpg",
+            ".jpeg",
+            ".png"
+        };
+
+        private static readonly string[] AllowedContentTypes =
+        {
+            "image/jpeg",
+            "image/png"
+        };
+
+        private const long MaxFileSize = 5 * 1024 * 1024;
 
         public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService)
         {
@@ -37,7 +51,30 @@ namespace ReUnited_Backend.Controllers
             {
                 return BadRequest("An image is required");
             }
-            
+
+            var extension =
+                Path.GetExtension(
+                    request.Image.FileName)
+                    .ToLowerInvariant();
+
+            if (!AllowedExtensions.Contains(extension))
+            {
+                return BadRequest(
+                    "Only JPG, JPEG and PNG images are allowed.");
+            }
+
+            if (!AllowedContentTypes.Contains(request.Image.ContentType))
+            {
+                return BadRequest(
+                    "Invalid image type.");
+            }
+
+            if (request.Image.Length > MaxFileSize)
+            {
+                return BadRequest(
+                    "Maximum file size is 5MB.");
+            }
+
             await using var stream = request.Image.OpenReadStream();
 
             var storagePath =
