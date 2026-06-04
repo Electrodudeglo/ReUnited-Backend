@@ -61,6 +61,13 @@ namespace ReUnited_Backend.Controllers
                     "Only JPG, JPEG and PNG images are allowed.");
             }
 
+            if (!AllowedContentTypes.Contains(
+                request.Image.ContentType))
+                {
+                    return BadRequest(
+                        "Invalid image type.");
+                }
+
             await using var stream = request.Image.OpenReadStream();
 
             var storagePath =
