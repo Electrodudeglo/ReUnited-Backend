@@ -12,9 +12,9 @@ namespace ReUnited_Backend.Controllers
     public class LostItemsController : ControllerBase
     {
         private readonly ILostItemService _lostItemService;
-        private readonly ImageStorageService _imageStorageService;
+        private readonly IImageStorageService _imageStorageService;
 
-        public LostItemsController(ILostItemService lostItemService, ImageStorageService imageStorageService)
+        public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService)
         {
             _lostItemService = lostItemService;
             _imageStorageService = imageStorageService;
