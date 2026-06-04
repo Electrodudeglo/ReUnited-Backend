@@ -1,4 +1,6 @@
-﻿namespace ReUnited_Backend.Services
+﻿using Microsoft.Extensions.Options;
+
+namespace ReUnited_Backend.Services
 {
     public class ImageUrlService
     {
