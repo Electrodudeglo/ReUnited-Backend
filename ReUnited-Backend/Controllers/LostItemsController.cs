@@ -26,6 +26,8 @@ namespace ReUnited_Backend.Controllers
             "image/png"
         };
 
+        private const long MaxFileSize = 5 * 1024 * 1024;
+
         public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService)
         {
             _lostItemService = lostItemService;
