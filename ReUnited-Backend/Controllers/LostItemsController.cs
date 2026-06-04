@@ -20,6 +20,12 @@ namespace ReUnited_Backend.Controllers
             ".png"
         };
 
+        private static readonly string[] AllowedContentTypes =
+        {
+            "image/jpeg",
+            "image/png"
+        };
+
         public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService)
         {
             _lostItemService = lostItemService;
