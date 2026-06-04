@@ -26,13 +26,34 @@ namespace ReUnited_Backend.Controllers
 
 
         [HttpPost]
-        public IActionResult AddOneLostItem(LostItem lostItem)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AddOneLostItem([FromForm] CreateLostItemDTO request)
         {
+            await using var stream = request.Image.OpenReadStream();
+
+            var storagePath =
+                await _imageStorageService.UploadAsync(
+                stream,
+                request.Image.FileName,
+                request.Image.ContentType);
+
+            var lostItem = new LostItem
+            {
+                City = request.City,
+                Postcode = request.Postcode,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
+                Category = request.Category,
+                ItemDescription = request.ItemDescription,
+                AdditionalInformation = request.AdditionalInformation,
+                Picture = storagePath
+            };
+
             LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
 
             return Created("/lostitems", addLostItem);
         }
-        
+
 
         [HttpPut("{id}")]
         public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
