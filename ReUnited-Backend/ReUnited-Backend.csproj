@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ReUnited_Backend</RootNamespace>
+    <UserSecretsId>a9f48a22-78a3-43d1-85f0-d019b2c4850f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
