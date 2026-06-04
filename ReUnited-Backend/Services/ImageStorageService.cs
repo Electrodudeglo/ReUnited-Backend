@@ -10,7 +10,7 @@ namespace ReUnited_Backend.Services
     public class ImageStorageService : IImageStorageService
     {
         private readonly HttpClient _httpClient;
-        private readonly IConfiguration _configuration;
+        private readonly SupabaseSettings _settings;
 
         public ImageStorageService(HttpClient httpClient, IConfiguration configuration)
         {
