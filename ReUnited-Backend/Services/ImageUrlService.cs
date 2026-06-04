@@ -4,7 +4,7 @@ namespace ReUnited_Backend.Services
 {
     public class ImageUrlService
     {
-        private readonly IConfiguration _configuration;
+        private readonly SupabaseSettings _settings;
 
         public ImageUrlService(
             IConfiguration configuration)
