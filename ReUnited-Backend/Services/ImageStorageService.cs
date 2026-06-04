@@ -20,14 +20,11 @@ namespace ReUnited_Backend.Services
 
         public async Task<string> UploadAsync(Stream stream, string originalFileName, string contentType)
         {
-            var bucket =
-                _configuration["Supabase:Bucket"];
+            var bucket = _settings.Bucket;
 
-            var supabaseUrl =
-                _configuration["Supabase:Url"];
+            var supabaseUrl = _settings.Url;
 
-            var apiKey =
-                _configuration["Supabase:ApiKey"];
+            var apiKey = _settings.ApiKey;
 
             var fileName =
                 $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
