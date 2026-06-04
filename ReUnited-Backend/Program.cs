@@ -21,6 +21,7 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 builder.Services.AddScoped<ILostItemService, LostItemService>();
 builder.Services.AddScoped<ILostItemRepository, LostItemRepository>();
 
+builder.Services.AddHttpClient();
 
 
 // Add services to the container.
