@@ -22,6 +22,10 @@ builder.Services.AddScoped<ILostItemService, LostItemService>();
 builder.Services.AddScoped<ILostItemRepository, LostItemRepository>();
 
 builder.Services.AddHttpClient();
+
+builder.Services.Configure<SupabaseSettings>(
+    builder.Configuration.GetSection("Supabase"));
+
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 builder.Services.AddScoped<ImageUrlService>();
 
