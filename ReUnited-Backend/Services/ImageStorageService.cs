@@ -2,7 +2,11 @@
 
 namespace ReUnited_Backend.Services
 {
-    public class ImageStorageService
+    public interface IImageStorageService
+    {
+        Task<string> UploadAsync(Stream stream, string originalFilename, string contentType);
+    }
+    public class ImageStorageService : IImageStorageService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
