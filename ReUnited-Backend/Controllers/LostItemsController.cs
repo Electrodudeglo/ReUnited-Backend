@@ -31,6 +31,8 @@ namespace ReUnited_Backend.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> AddOneLostItem([FromForm] CreateLostItemDTO request)
         {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+            
             if (request.Image is null)
             {
                 return BadRequest("An image is required");
