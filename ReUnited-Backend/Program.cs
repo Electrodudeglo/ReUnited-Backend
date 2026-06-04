@@ -22,7 +22,7 @@ builder.Services.AddScoped<ILostItemService, LostItemService>();
 builder.Services.AddScoped<ILostItemRepository, LostItemRepository>();
 
 builder.Services.AddHttpClient();
-
+builder.Services.AddScoped<ImageStorageService>();
 
 // Add services to the container.
 
