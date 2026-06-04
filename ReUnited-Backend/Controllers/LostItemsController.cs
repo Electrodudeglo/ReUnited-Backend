@@ -60,7 +60,10 @@ namespace ReUnited_Backend.Controllers
 
             LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
 
-            return Created("/lostitems", addLostItem);
+            return CreatedAtAction(
+                nameof(GetLostItemById),
+                new { id = addLostItem.Id },
+                addLostItem);
         }
 
 
