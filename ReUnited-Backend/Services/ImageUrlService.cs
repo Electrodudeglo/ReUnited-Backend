@@ -9,5 +9,15 @@
         {
             _configuration = configuration;
         }
+
+        public string GetPublicUrl(
+            string storagePath)
+        {
+            var supabaseUrl =
+                _configuration["Supabase:Url"];
+
+            return
+                $"{supabaseUrl}/storage/v1/object/public/{storagePath}";
+        }
     }
 }
