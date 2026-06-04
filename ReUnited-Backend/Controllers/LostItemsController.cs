@@ -43,7 +43,18 @@ namespace ReUnited_Backend.Controllers
             {
                 return BadRequest("An image is required");
             }
-            
+
+            var extension =
+                Path.GetExtension(
+                    request.Image.FileName)
+                    .ToLowerInvariant();
+
+            if (!AllowedExtensions.Contains(extension))
+            {
+                return BadRequest(
+                    "Only JPG, JPEG and PNG images are allowed.");
+            }
+
             await using var stream = request.Image.OpenReadStream();
 
             var storagePath =
