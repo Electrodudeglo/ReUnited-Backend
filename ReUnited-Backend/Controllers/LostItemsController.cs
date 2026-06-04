@@ -12,10 +12,12 @@ namespace ReUnited_Backend.Controllers
     public class LostItemsController : ControllerBase
     {
         private readonly ILostItemService _lostItemService;
+        private readonly IImageStorageService _imageStorageService;
 
-        public LostItemsController(ILostItemService lostItemService)
+        public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService)
         {
             _lostItemService = lostItemService;
+            _imageStorageService = imageStorageService;
         }
 
         [HttpGet]
@@ -26,13 +28,44 @@ namespace ReUnited_Backend.Controllers
 
 
         [HttpPost]
-        public IActionResult AddOneLostItem(LostItem lostItem)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AddOneLostItem([FromForm] CreateLostItemDTO request)
         {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+            
+            if (request.Image is null)
+            {
+                return BadRequest("An image is required");
+            }
+            
+            await using var stream = request.Image.OpenReadStream();
+
+            var storagePath =
+                await _imageStorageService.UploadAsync(
+                stream,
+                request.Image.FileName,
+                request.Image.ContentType);
+
+            var lostItem = new LostItem
+            {
+                City = request.City,
+                Postcode = request.Postcode,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
+                Category = request.Category,
+                ItemDescription = request.ItemDescription,
+                AdditionalInformation = request.AdditionalInformation,
+                Picture = storagePath
+            };
+
             LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
 
-            return Created("/lostitems", addLostItem);
+            return CreatedAtAction(
+                nameof(GetLostItemById),
+                new { id = addLostItem.Id },
+                addLostItem);
         }
-        
+
 
         [HttpPut("{id}")]
         public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
