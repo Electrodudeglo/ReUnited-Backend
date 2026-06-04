@@ -12,10 +12,10 @@ namespace ReUnited_Backend.Services
         private readonly HttpClient _httpClient;
         private readonly SupabaseSettings _settings;
 
-        public ImageStorageService(HttpClient httpClient, IConfiguration configuration)
+        public ImageStorageService(HttpClient httpClient, IOptions<SupabaseSettings> options)
         {
             _httpClient = httpClient;
-            _configuration = configuration;
+            _settings = options.Value;
         }
 
         public async Task<string> UploadAsync(Stream stream, string originalFileName, string contentType)
