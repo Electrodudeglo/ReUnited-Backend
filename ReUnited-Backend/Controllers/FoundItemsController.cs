@@ -9,9 +9,9 @@ namespace ReUnited_Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LostItemsController : ControllerBase
+    public class FoundItemsController : ControllerBase
     {
-        private readonly ILostItemService _lostItemService;
+        private readonly IFoundItemService _foundItemService;
         private readonly IImageStorageService _imageStorageService;
         private readonly ImageUrlService _imageUrlService;
         private static readonly string[] AllowedExtensions =
@@ -29,21 +29,21 @@ namespace ReUnited_Backend.Controllers
 
         private const long MaxFileSize = 5 * 1024 * 1024;
 
-        public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService, ImageUrlService imageUrlService)
+        public FoundItemsController(IFoundItemService foundItemService, IImageStorageService imageStorageService, ImageUrlService imageUrlService)
         {
-            _lostItemService = lostItemService;
+            _foundItemService = foundItemService;
             _imageStorageService = imageStorageService;
             _imageUrlService = imageUrlService;
         }
 
         [HttpGet]
-        public IActionResult GetLostItems()
+        public IActionResult GetFoundItems()
         {
             var items =
-                _lostItemService
-                    .GetLostItems()
+                _foundItemService
+                    .GetFoundItems()
                     .Select(item =>
-                        new LostItemResponseDTO
+                        new FoundItemResponseDTO
                         {
                             Id = item.Id,
                             City = item.City,
@@ -63,17 +63,17 @@ namespace ReUnited_Backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetLostItemById(int id)
+        public IActionResult GetFoundItemById(int id)
         {
             var item =
-                _lostItemService.GetLostItemsById(id);
+                _foundItemService.GetFoundItemsById(id);
 
             if (item == null)
             {
                 return NotFound();
             }
 
-            var dto = new LostItemResponseDTO
+            var dto = new FoundItemResponseDTO
             {
                 Id = item.Id,
                 City = item.City,
@@ -94,7 +94,7 @@ namespace ReUnited_Backend.Controllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddOneLostItem([FromForm] CreateLostItemDTO request)
+        public async Task<IActionResult> AddOneFoundItem([FromForm] CreateFoundItemDTO request)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
@@ -134,7 +134,7 @@ namespace ReUnited_Backend.Controllers
                 request.Image.FileName,
                 request.Image.ContentType);
 
-            var lostItem = new LostItem
+            var foundItem = new FoundItem
             {
                 City = request.City,
                 Postcode = request.Postcode,
@@ -146,55 +146,55 @@ namespace ReUnited_Backend.Controllers
                 Picture = storagePath
             };
 
-            LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
+            FoundItem addFoundItem = _foundItemService.AddOneFoundItem(foundItem);
 
-            var response = new LostItemResponseDTO
+            var response = new FoundItemResponseDTO
             {
-                Id = addLostItem.Id,
-                City = addLostItem.City,
-                Postcode = addLostItem.Postcode,
-                Email = addLostItem.Email,
-                PhoneNumber = addLostItem.PhoneNumber,
-                Category = addLostItem.Category,
-                ItemDescription = addLostItem.ItemDescription,
-                AdditionalInformation = addLostItem.AdditionalInformation,
-                Picture = _imageUrlService.GetPublicUrl(addLostItem.Picture)
+                Id = addFoundItem.Id,
+                City = addFoundItem.City,
+                Postcode = addFoundItem.Postcode,
+                Email = addFoundItem.Email,
+                PhoneNumber = addFoundItem.PhoneNumber,
+                Category = addFoundItem.Category,
+                ItemDescription = addFoundItem.ItemDescription,
+                AdditionalInformation = addFoundItem.AdditionalInformation,
+                Picture = _imageUrlService.GetPublicUrl(addFoundItem.Picture)
             };
 
             return CreatedAtAction(
-                nameof(GetLostItemById),
-                new { id = addLostItem.Id },
-                addLostItem);
+                nameof(GetFoundItemById),
+                new { id = addFoundItem.Id },
+                addFoundItem);
         }
 
 
         [HttpPut("{id}")]
-        public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
+        public IActionResult UpdateFoundItemById(UpdateFoundItemDTO foundItem, int id)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
             try
             {
-                var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
+                var updatedFoundItem = _foundItemService.UpdateFoundItemById(foundItem, id);
 
-                if (updatedLostItem == null) { return NotFound(); }
+                if (updatedFoundItem == null) { return NotFound(); }
 
-                return Ok(updatedLostItem);
+                return Ok(updatedFoundItem);
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while updating the lost item.");
+                return StatusCode(500, "An error occurred while updating the found item.");
             }
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteLostItemById(int id)
+        public IActionResult DeleteFoundItemById(int id)
         {
-            var deletedLostItem = _lostItemService.DeleteLostItemById(id);
+            var deletedFoundItem = _foundItemService.DeleteFoundItemById(id);
 
-            if (!deletedLostItem)
+            if (!deletedFoundItem)
             {
-                return NotFound($"Lost item with ID {id} not found");
+                return NotFound($"Found item with ID {id} not found");
             }
 
             return NoContent();

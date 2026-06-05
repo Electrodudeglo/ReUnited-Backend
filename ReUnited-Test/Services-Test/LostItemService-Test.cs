@@ -7,155 +7,155 @@ using ReUnited_Backend.Services;
 
 namespace ReUnited_Test;
 
-public class LostItemService_Test
+public class FoundItemService_Test
 {
 
-    private LostItemService _lostItemService;
-    private Mock<ILostItemRepository> _lostItemRepoMoq;
+    private FoundItemService _foundItemService;
+    private Mock<IFoundItemRepository> _foundItemRepoMock;
 
     [SetUp]
     public void Setup()
     {
-        _lostItemRepoMoq = new Mock<ILostItemRepository>();
-        _lostItemService = new LostItemService(_lostItemRepoMoq.Object);  
+        _foundItemRepoMock = new Mock<IFoundItemRepository>();
+        _foundItemService = new FoundItemService(_foundItemRepoMock.Object);  
     }
 
     [Test]
     public void GetAllItems_Returns_List_Of_Items()
     {
-        List<LostItem> lostItems = new List<LostItem>
+        List<FoundItem> foundItems = new List<FoundItem>
         {
-            new LostItem(),
-            new LostItem(),
+            new FoundItem(),
+            new FoundItem(),
         };
 
-        _lostItemRepoMoq.Setup(r => r.GetLostItems()).Returns(lostItems);
-        IEnumerable<LostItem> actual = _lostItemService.GetLostItems();
+        _foundItemRepoMock.Setup(r => r.GetFoundItems()).Returns(foundItems);
+        IEnumerable<FoundItem> actual = _foundItemService.GetFoundItems();
 
-        Assert.That(actual, Is.EqualTo(lostItems));
+        Assert.That(actual, Is.EqualTo(foundItems));
     }
 
     [Test]
     public void GetOneItem_return_One_Item()
     {
-        LostItem lostItem = new LostItem();
-        _lostItemRepoMoq.Setup(r => r.GetLostItemById(1)).Returns(lostItem);
-        LostItem actual = _lostItemService.GetLostItemsById(1);
-        Assert.That(actual, Is.EqualTo(lostItem));
+        FoundItem foundItem = new FoundItem();
+        _foundItemRepoMock.Setup(r => r.GetFoundItemById(1)).Returns(foundItem);
+        FoundItem actual = _foundItemService.GetFoundItemsById(1);
+        Assert.That(actual, Is.EqualTo(foundItem));
     }
     [Test]
-    public void DeleteLostItemById_Returns_True_When_Item_Deleted()
+    public void DeleteFoundItemById_Returns_True_When_Item_Deleted()
     {
-        _lostItemRepoMoq.Setup(r => r.DeleteLostItemById(1)).Returns(true);
-        bool actual = _lostItemService.DeleteLostItemById(1);
+        _foundItemRepoMock.Setup(r => r.DeleteFoundItemById(1)).Returns(true);
+        bool actual = _foundItemService.DeleteFoundItemById(1);
         Assert.That(actual, Is.True);
     }
     [Test]
-    public void DeleteLostItem_Returns_False()
+    public void DeleteFoundItem_Returns_False()
     {
-        _lostItemRepoMoq.Setup(r => r.DeleteLostItemById(1)).Returns(false);
+        _foundItemRepoMock.Setup(r => r.DeleteFoundItemById(1)).Returns(false);
 
-        bool actual = _lostItemService.DeleteLostItemById(1);
+        bool actual = _foundItemService.DeleteFoundItemById(1);
 
         Assert.That(actual, Is.False);
     }
         [Test]
-        public void UpdateLostItemById_CallsRepositoryOnce()
+        public void UpdateFoundItemById_CallsRepositoryOnce()
         {
             // Arrange
-            var dto = new UpdateLostItemDTO(
+            var dto = new UpdateFoundItemDTO(
                 "London",
                 "SW1A1AA",
                 "john.doe@example.com",
                 "07123456789",
                 "Wallet",
                 "Black leather wallet",
-                "Lost near station",
+                "Found near station",
                 "wallet.jpg"
             );
 
-            var lostItem = new LostItem(
+            var foundItem = new FoundItem(
                 "London",
                 "SW1A1AA",
                 "john.doe@example.com",
                 "07123456789",
                 "Wallet",
                 "Black leather wallet",
-                "Lost near station",
+                "Found near station",
                 "wallet.jpg"
             );
 
-            _lostItemRepoMoq
-                .Setup(r => r.UpdateLostItemById(dto, 1))
-                .Returns(lostItem);
+            _foundItemRepoMock
+                .Setup(r => r.UpdateFoundItemById(dto, 1))
+                .Returns(foundItem);
 
             // Act
-            _lostItemService.UpdateLostItemById(dto, 1);
+            _foundItemService.UpdateFoundItemById(dto, 1);
 
             // Assert
-            _lostItemRepoMoq.Verify(
-                r => r.UpdateLostItemById(dto, 1),
+            _foundItemRepoMock.Verify(
+                r => r.UpdateFoundItemById(dto, 1),
                 Times.Once);
         }
 
         [Test]
-        public void UpdateLostItemById_ReturnsUpdatedLostItem()
+        public void UpdateFoundItemById_ReturnsUpdatedFoundItem()
         {
             // Arrange
-            var dto = new UpdateLostItemDTO(
+            var dto = new UpdateFoundItemDTO(
                 "London",
                 "SW1A1AA",
                 "john.doe@example.com",
                 "07123456789",
                 "Wallet",
                 "Black leather wallet",
-                "Lost near station",
+                "Found near station",
                 "wallet.jpg"
             );
 
-            var expected = new LostItem(
+            var expected = new FoundItem(
                 "London",
                 "SW1A1AA",
                 "john.doe@example.com",
                 "07123456789",
                 "Wallet",
                 "Black leather wallet",
-                "Lost near station",
+                "Found near station",
                 "wallet.jpg"
             );
 
-            _lostItemRepoMoq
-                .Setup(r => r.UpdateLostItemById(dto, 1))
+            _foundItemRepoMock
+                .Setup(r => r.UpdateFoundItemById(dto, 1))
                 .Returns(expected);
 
             // Act
-            var result = _lostItemService.UpdateLostItemById(dto, 1);
+            var result = _foundItemService.UpdateFoundItemById(dto, 1);
 
             // Assert
             Assert.That(result, Is.EqualTo(expected));
         }
 
         [Test]
-        public void UpdateLostItemById_ReturnsNull_WhenRepositoryReturnsNull()
+        public void UpdateFoundItemById_ReturnsNull_WhenRepositoryReturnsNull()
         {
             // Arrange
-            var dto = new UpdateLostItemDTO(
+            var dto = new UpdateFoundItemDTO(
                 "London",
                 "SW1A1AA",
                 "john.doe@example.com",
                 "07123456789",
                 "Wallet",
                 "Black leather wallet",
-                "Lost near station",
+                "Found near station",
                 "wallet.jpg"
             );
 
-            _lostItemRepoMoq
-                .Setup(r => r.UpdateLostItemById(dto, 1))
-                .Returns((LostItem)null);
+            _foundItemRepoMock
+                .Setup(r => r.UpdateFoundItemById(dto, 1))
+                .Returns((FoundItem)null);
 
             // Act
-            var result = _lostItemService.UpdateLostItemById(dto, 1);
+            var result = _foundItemService.UpdateFoundItemById(dto, 1);
 
             // Assert
             Assert.That(result, Is.Null);
@@ -163,10 +163,10 @@ public class LostItemService_Test
         }
 
         [Test]
-        public void UpdateLostItemById_PassesCorrectArgumentsToRepository()
+        public void UpdateFoundItemById_PassesCorrectArgumentsToRepository()
         {
             // Arrange
-            var dto = new UpdateLostItemDTO(
+            var dto = new UpdateFoundItemDTO(
                 "Manchester",
                 "M11AA",
                 "test@test.com",
@@ -177,7 +177,7 @@ public class LostItemService_Test
                 "phone.jpg"
             );
 
-            var lostItem = new LostItem(
+            var foundItem = new FoundItem(
                 "Manchester",
                 "M11AA",
                 "test@test.com",
@@ -188,17 +188,17 @@ public class LostItemService_Test
                 "phone.jpg"
             );
 
-            _lostItemRepoMoq
-                .Setup(r => r.UpdateLostItemById(dto, 5))
-                .Returns(lostItem);
+            _foundItemRepoMock
+                .Setup(r => r.UpdateFoundItemById(dto, 5))
+                .Returns(foundItem);
 
             // Act
-            _lostItemService.UpdateLostItemById(dto, 5);
+            _foundItemService.UpdateFoundItemById(dto, 5);
 
             // Assert
-            _lostItemRepoMoq.Verify(r =>
-                r.UpdateLostItemById(
-                    It.Is<UpdateLostItemDTO>(x =>
+            _foundItemRepoMock.Verify(r =>
+                r.UpdateFoundItemById(
+                    It.Is<UpdateFoundItemDTO>(x =>
                         x.City == "Manchester" &&
                         x.Category == "Phone"),
                     5),
@@ -206,10 +206,10 @@ public class LostItemService_Test
         }
 
         [Test]
-        public void UpdateLostItemById_WithInvalidId_ReturnsNull()
+        public void UpdateFoundItemById_WithInvalidId_ReturnsNull()
         {
             // Arrange
-            var dto = new UpdateLostItemDTO(
+            var dto = new UpdateFoundItemDTO(
                 "London",
                 "SW1A1AA",
                 "john@test.com",
@@ -220,22 +220,22 @@ public class LostItemService_Test
                 "wallet.jpg"
             );
 
-            _lostItemRepoMoq
-                .Setup(r => r.UpdateLostItemById(dto, -1))
-                .Returns((LostItem)null);
+            _foundItemRepoMock
+                .Setup(r => r.UpdateFoundItemById(dto, -1))
+                .Returns((FoundItem)null);
 
             // Act
-            var result = _lostItemService.UpdateLostItemById(dto, -1);
+            var result = _foundItemService.UpdateFoundItemById(dto, -1);
 
             // Assert
             Assert.That(result, Is.Null);
         }
 
         [Test]
-        public void UpdateLostItemById_WhenRepositoryThrows_ExceptionIsThrown()
+        public void UpdateFoundItemById_WhenRepositoryThrows_ExceptionIsThrown()
         {
             // Arrange
-            var dto = new UpdateLostItemDTO(
+            var dto = new UpdateFoundItemDTO(
                 "London",
                 "SW1A1AA",
                 "john@test.com",
@@ -246,20 +246,20 @@ public class LostItemService_Test
                 "wallet.jpg"
             );
 
-            _lostItemRepoMoq
-                .Setup(r => r.UpdateLostItemById(dto, 1))
+            _foundItemRepoMock
+                .Setup(r => r.UpdateFoundItemById(dto, 1))
                 .Throws(new Exception("Database failure"));
 
             // Act & Assert
             Assert.Throws<Exception>(() =>
-                _lostItemService.UpdateLostItemById(dto, 1));
+                _foundItemService.UpdateFoundItemById(dto, 1));
         }
 
-    public void AddOneLostItem_Returns_Ok_With_Added_Item()
+    public void AddOneFoundItem_Returns_Ok_With_Added_Item()
     {
-        LostItem addLostItem = new LostItem();
-        _lostItemRepoMoq.Setup(a => a.AddOneLostItem(addLostItem)).Returns(addLostItem);
-        LostItem actual = _lostItemService.AddOneLostItem(addLostItem);
-        Assert.That(actual, Is.EqualTo(addLostItem));
+        FoundItem addFoundItem = new FoundItem();
+        _foundItemRepoMock.Setup(a => a.AddOneFoundItem(addFoundItem)).Returns(addFoundItem);
+        FoundItem actual = _foundItemService.AddOneFoundItem(addFoundItem);
+        Assert.That(actual, Is.EqualTo(addFoundItem));
     }
 }

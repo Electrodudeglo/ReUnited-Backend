@@ -18,8 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddScoped<ILostItemService, LostItemService>();
-builder.Services.AddScoped<ILostItemRepository, LostItemRepository>();
+builder.Services.AddScoped<IFoundItemService, FoundItemService>();
+builder.Services.AddScoped<IFoundItemRepository, FoundItemRepository>();
 
 builder.Services.AddHttpClient();
 
@@ -42,7 +42,7 @@ builder.Services.AddScoped<ImageUrlService>();
 
 // Add services to the container.
 
-builder.Services.AddDbContext<LostItemDbContext>(options =>
+builder.Services.AddDbContext<FoundItemDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("SupabaseDb")));
 
@@ -54,7 +54,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ExceptionHandlerMiddleware>();
 
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<LostItemDbContext>();
+    .AddDbContextCheck<FoundItemDbContext>();
 
 
 var supabaseURL = builder.Configuration["Supabase:URL"];
@@ -109,8 +109,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<LostItemDbContext>();
-    db.Database.EnsureCreated();
+    var db = scope.ServiceProvider.GetRequiredService<FoundItemDbContext>();
+    db.Database.Migrate();
     SeedData.Initialize(db);
 }
 
