@@ -5,14 +5,6 @@ using System.Security.Claims;
 using System.Text;
 using Supabase;
 
-public record AuthToken(
-    string? id,
-    string? accessToken,
-    string? refreshToken,
-    string? expiresIn,
-    string? expiresAt,
-    string? tokenType
-);
 
 public class LoginModel
 {
