@@ -7,7 +7,7 @@
     "Category": "Electronics",
     "ItemDescription": "Black iPhone 14 Pro with cracked screen protector.",
     "AdditionalInformation": "Lost near Victoria Station on Monday evening.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Manchester",
@@ -17,7 +17,7 @@
     "Category": "Wallet",
     "ItemDescription": "Brown leather wallet containing driving licence and bank cards.",
     "AdditionalInformation": "Possibly left in a taxi.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Birmingham",
@@ -27,7 +27,7 @@
     "Category": "Keys",
     "ItemDescription": "Set of house keys with a blue Manchester City keyring.",
     "AdditionalInformation": "Lost near Bullring Shopping Centre.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Leeds",
@@ -37,7 +37,7 @@
     "Category": "Bag",
     "ItemDescription": "Grey North Face backpack containing university books.",
     "AdditionalInformation": "Left on a train from York to Leeds.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Liverpool",
@@ -47,7 +47,7 @@
     "Category": "Jewellery",
     "ItemDescription": "Gold bracelet with small heart charm.",
     "AdditionalInformation": "Lost during a concert at the arena.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Bristol",
@@ -57,7 +57,7 @@
     "Category": "Phone",
     "ItemDescription": "White Samsung Galaxy S23 with floral phone case.",
     "AdditionalInformation": "Lost in Cabot Circus shopping centre.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Nottingham",
@@ -67,7 +67,7 @@
     "Category": "Clothing",
     "ItemDescription": "Dark blue winter coat with fur-lined hood.",
     "AdditionalInformation": "Forgotten at a restaurant.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Sheffield",
@@ -77,7 +77,7 @@
     "Category": "Documents",
     "ItemDescription": "Blue folder containing passport and travel documents.",
     "AdditionalInformation": "Lost at Sheffield train station.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Newcastle",
@@ -87,7 +87,7 @@
     "Category": "Sports Equipment",
     "ItemDescription": "Red mountain bike with white stripes and bottle holder.",
     "AdditionalInformation": "Taken from outside a supermarket.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   },
   {
     "City": "Edinburgh",
@@ -97,6 +97,6 @@
     "Category": "Laptop",
     "ItemDescription": "Silver MacBook Air with stickers on the lid.",
     "AdditionalInformation": "Left in a coffee shop near Princes Street.",
-    "Picture": "images/placeholder.jpg"
+    "Picture": "LostItems/placeholder.jpg"
   }
 ]

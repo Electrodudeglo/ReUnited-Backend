@@ -13,6 +13,7 @@ namespace ReUnited_Backend.Controllers
     {
         private readonly ILostItemService _lostItemService;
         private readonly IImageStorageService _imageStorageService;
+        private readonly ImageUrlService _imageUrlService;
         private static readonly string[] AllowedExtensions =
         {
             ".jpg",
@@ -28,25 +29,75 @@ namespace ReUnited_Backend.Controllers
 
         private const long MaxFileSize = 5 * 1024 * 1024;
 
-        public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService)
+        public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService, ImageUrlService imageUrlService)
         {
             _lostItemService = lostItemService;
             _imageStorageService = imageStorageService;
+            _imageUrlService = imageUrlService;
         }
 
         [HttpGet]
-        public IActionResult GetLostItems() => Ok(_lostItemService.GetLostItems());
+        public IActionResult GetLostItems()
+        {
+            var items =
+                _lostItemService
+                    .GetLostItems()
+                    .Select(item =>
+                        new LostItemResponseDTO
+                        {
+                            Id = item.Id,
+                            City = item.City,
+                            Postcode = item.Postcode,
+                            Email = item.Email,
+                            PhoneNumber = item.PhoneNumber,
+                            Category = item.Category,
+                            ItemDescription = item.ItemDescription,
+                            AdditionalInformation =
+                                item.AdditionalInformation,
+                            Picture =
+                                _imageUrlService.GetPublicUrl(
+                                    item.Picture)
+                        });
+
+            return Ok(items);
+        }
 
         [HttpGet("{id}")]
-        public IActionResult GetLostItemById(int id) => Ok(_lostItemService.GetLostItemsById(id));
+        public IActionResult GetLostItemById(int id)
+        {
+            var item =
+                _lostItemService.GetLostItemsById(id);
 
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var dto = new LostItemResponseDTO
+            {
+                Id = item.Id,
+                City = item.City,
+                Postcode = item.Postcode,
+                Email = item.Email,
+                PhoneNumber = item.PhoneNumber,
+                Category = item.Category,
+                ItemDescription = item.ItemDescription,
+                AdditionalInformation =
+                    item.AdditionalInformation,
+                Picture =
+                    _imageUrlService.GetPublicUrl(
+                        item.Picture)
+            };
+
+            return Ok(dto);
+        }
 
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> AddOneLostItem([FromForm] CreateLostItemDTO request)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
-            
+
             if (request.Image is null)
             {
                 return BadRequest("An image is required");
@@ -96,6 +147,19 @@ namespace ReUnited_Backend.Controllers
             };
 
             LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
+
+            var response = new LostItemResponseDTO
+            {
+                Id = addLostItem.Id,
+                City = addLostItem.City,
+                Postcode = addLostItem.Postcode,
+                Email = addLostItem.Email,
+                PhoneNumber = addLostItem.PhoneNumber,
+                Category = addLostItem.Category,
+                ItemDescription = addLostItem.ItemDescription,
+                AdditionalInformation = addLostItem.AdditionalInformation,
+                Picture = _imageUrlService.GetPublicUrl(addLostItem.Picture)
+            };
 
             return CreatedAtAction(
                 nameof(GetLostItemById),
