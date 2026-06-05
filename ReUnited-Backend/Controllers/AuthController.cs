@@ -5,14 +5,6 @@ using System.Security.Claims;
 using System.Text;
 using Supabase;
 
-public record AuthToken(
-    string? id,
-    string? accessToken,
-    string? refreshToken,
-    string? expiresIn,
-    string? expiresAt,
-    string? tokenType
-);
 
 public class LoginModel
 {
@@ -32,53 +24,18 @@ namespace ReUnited_Backend.Controllers
             _config = config;
         }
 
-        [HttpPost("token")]
+        [HttpPost("login")]
         public async Task<IActionResult> GenerateToken([FromBody] LoginModel login)
         {
-            //if (login.Username != "user@example.com" || login.Password != "password123") return Unauthorized();
-
-
             var supabase = new Client(
                 _config["Supabase:URL"],
                 _config["Supabase:Key"],
                 new SupabaseOptions()
             );
 
-            
-            
-
-
-            //await supabase.InitializeAsync();
-
             var session = await supabase.Auth.SignIn(login.Username, login.Password);
-            /*session.ProviderRefreshToken
-                session.RefreshToken
-                session.ProviderToken*/
 
-            /*var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, login.Username),
-                new Claim(ClaimTypes.Role, "admin")
-            };*/
-
-            var authToken = new AuthToken
-            (
-                id: session?.User?.Id,
-                accessToken: session?.AccessToken,
-                refreshToken: session?.RefreshToken,
-                expiresIn: session?.ExpiresIn.ToString(),
-                expiresAt: session?.ExpiresAt().ToString(),
-                tokenType: session?.TokenType
-            );
-
-            return Ok(authToken);
-        }
-
-        [HttpGet("debug-auth")]
-        public IActionResult DebugAuth()
-        {
-            var authHeader = Request.Headers["Authorization"].ToString();
-            return Ok(new { received = authHeader });
+            return Ok(session?.AccessToken);
         }
     }
 }
