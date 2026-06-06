@@ -183,14 +183,16 @@ namespace ReUnited_Backend.Controllers
             {
                 var userId = User.FindFirst("sub")?.Value;
 
-                var updatedFoundItem = _foundItemService.UpdateFoundItemById(foundItem, id);
+                var currentFoundItem = _foundItemService.GetFoundItemsById(id);
 
-                if (updatedFoundItem == null) { return NotFound(); }
+                if (currentFoundItem == null) { return NotFound(); }
 
-                if (updatedFoundItem.UserId != userId)
+                if (currentFoundItem.UserId != userId)
                 {
                     return Forbid();
                 }
+
+                var updatedFoundItem = _foundItemService.UpdateFoundItemById(foundItem, id);
 
                 return Ok(updatedFoundItem);
             }
@@ -204,6 +206,14 @@ namespace ReUnited_Backend.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteFoundItemById(int id)
         {
+            var userId = User.FindFirst("sub")?.Value;
+            var currentFoundItem = _foundItemService.GetFoundItemsById(id);
+
+            if (currentFoundItem.UserId != userId)
+            {
+                return Forbid();
+            }
+
             var deletedFoundItem = _foundItemService.DeleteFoundItemById(id);
 
             if (!deletedFoundItem)
