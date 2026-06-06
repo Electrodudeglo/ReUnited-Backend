@@ -5,6 +5,7 @@ using ReUnited_Backend.DataModels;
 using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Services;
 using Supabase.Gotrue;
+using System.Security.Claims;
 
 namespace ReUnited_Backend.Controllers
 {
@@ -57,7 +58,8 @@ namespace ReUnited_Backend.Controllers
                                 item.AdditionalInformation,
                             Picture =
                                 _imageUrlService.GetPublicUrl(
-                                    item.Picture)
+                                    item.Picture),
+                            UserId = item.UserId
                         });
 
             return Ok(items);
@@ -74,6 +76,9 @@ namespace ReUnited_Backend.Controllers
                 return NotFound();
             }
 
+            Console.WriteLine(
+    $"Database UserId: {item.UserId}");
+
             var dto = new FoundItemResponseDTO
             {
                 Id = item.Id,
@@ -87,7 +92,8 @@ namespace ReUnited_Backend.Controllers
                     item.AdditionalInformation,
                 Picture =
                     _imageUrlService.GetPublicUrl(
-                        item.Picture)
+                        item.Picture),
+                UserId = item.UserId
             };
 
             return Ok(dto);
@@ -137,7 +143,11 @@ namespace ReUnited_Backend.Controllers
                 request.Image.ContentType);
 
             var userId =
-                User.FindFirst("sub")?.Value;
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            Console.WriteLine($"User.Identity.IsAuthenticated = {User.Identity?.IsAuthenticated}");
+
+            Console.WriteLine($"UserId = {userId}");
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -169,7 +179,8 @@ namespace ReUnited_Backend.Controllers
                 Category = addFoundItem.Category,
                 ItemDescription = addFoundItem.ItemDescription,
                 AdditionalInformation = addFoundItem.AdditionalInformation,
-                Picture = _imageUrlService.GetPublicUrl(addFoundItem.Picture)
+                Picture = _imageUrlService.GetPublicUrl(addFoundItem.Picture),
+                UserId = addFoundItem.UserId
             };
 
             return CreatedAtAction(
@@ -186,7 +197,8 @@ namespace ReUnited_Backend.Controllers
 
             try
             {
-                var userId = User.FindFirst("sub")?.Value;
+                var userId =
+                    User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 var currentFoundItem = _foundItemService.GetFoundItemsById(id);
 
@@ -211,8 +223,12 @@ namespace ReUnited_Backend.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteFoundItemById(int id)
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
             var currentFoundItem = _foundItemService.GetFoundItemsById(id);
+
+            if (currentFoundItem == null) { return NotFound(); }
 
             if (currentFoundItem.UserId != userId)
             {
@@ -221,10 +237,10 @@ namespace ReUnited_Backend.Controllers
 
             var deletedFoundItem = _foundItemService.DeleteFoundItemById(id);
 
-            if (!deletedFoundItem)
-            {
-                return NotFound($"Found item with ID {id} not found");
-            }
+            //if (!deletedFoundItem)
+            //{
+            //    return NotFound($"Found item with ID {id} not found");
+            //}
 
             return NoContent();
         }
