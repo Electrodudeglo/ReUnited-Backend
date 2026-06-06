@@ -139,6 +139,11 @@ namespace ReUnited_Backend.Controllers
             var userId =
                 User.FindFirst("sub")?.Value;
 
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
             var foundItem = new FoundItem
             {
                 City = request.City,
@@ -149,7 +154,7 @@ namespace ReUnited_Backend.Controllers
                 ItemDescription = request.ItemDescription,
                 AdditionalInformation = request.AdditionalInformation,
                 Picture = storagePath,
-                UserId = userId!
+                UserId = userId
             };
 
             FoundItem addFoundItem = _foundItemService.AddOneFoundItem(foundItem);
