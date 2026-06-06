@@ -57,8 +57,8 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<FoundItemDbContext>();
 
 
-var supabaseURL = builder.Configuration["Supabase:URL"];
-var supabaseAnonKey = builder.Configuration["Supabase:Key"];
+var supabaseUrl = builder.Configuration["Supabase:Url"];
+var supabaseAnonKey = builder.Configuration["Supabase:AnonKey"];
 var supabaseIssuer = builder.Configuration["Supabase:Issuer"];
 var supabaseAudience = builder.Configuration["Supabase:Audience"];
 
@@ -68,7 +68,7 @@ var sOptions = new Supabase.SupabaseOptions
 {
     AutoConnectRealtime = true
 };
-var supabaseClient = new Supabase.Client(supabaseURL, supabaseAnonKey, sOptions);
+var supabaseClient = new Supabase.Client(supabaseUrl, supabaseAnonKey, sOptions);
 await supabaseClient.InitializeAsync();
 builder.Services.AddSingleton(supabaseClient);
 
@@ -104,6 +104,8 @@ builder.Services
             }
         };
     });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
