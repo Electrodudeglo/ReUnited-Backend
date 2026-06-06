@@ -6,6 +6,7 @@
 
         public string Bucket { get; set; } = string.Empty;
 
-        public string ApiKey { get; set; } = string.Empty;
+        public string AnonKey { get; set; } = string.Empty;
+        public string ServiceRoleKey { get; set; } = string.Empty;
     }
 }
