@@ -10,9 +10,9 @@ using ReUnited_Backend.DbContexts;
 
 namespace ReUnited_Backend.Migrations
 {
-    [DbContext(typeof(LostItemDbContext))]
-    [Migration("20260601101352_InitialSupabase")]
-    partial class InitialSupabase
+    [DbContext(typeof(FoundItemDbContext))]
+    [Migration("20260606132904_AddUserIdToFoundItems")]
+    partial class AddUserIdToFoundItems
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace ReUnited_Backend.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ReUnited_Backend.DataModels.LostItem", b =>
+            modelBuilder.Entity("ReUnited_Backend.DataModels.FoundItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,9 +68,13 @@ namespace ReUnited_Backend.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.ToTable("LostItems");
+                    b.ToTable("FoundItems");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,12 +1,12 @@
 ﻿namespace ReUnited_Backend.DataModels
 {
     using System.ComponentModel.DataAnnotations;
-    public class LostItem
+    public class FoundItem
     {
-        public LostItem()
+        public FoundItem()
         {
         }
-        public LostItem(
+        public FoundItem(
             string city,
             string postcode,
             string email,
@@ -14,7 +14,8 @@
             string category,
             string itemDescription,
             string additionalInformation,
-            string picture)
+            string picture,
+            string userId)
         {
             City = city;
             Postcode = postcode;
@@ -24,6 +25,7 @@
             ItemDescription = itemDescription;
             AdditionalInformation = additionalInformation;
             Picture = picture;
+            UserId = userId;
         }
         [Key]
         public int Id { get; set; }
@@ -57,6 +59,9 @@
 
         [Required]
         public string Picture { get; set; } = string.Empty;
+
+        [Required]
+        public string UserId { get; set; } = string.Empty;
 
     }
 }

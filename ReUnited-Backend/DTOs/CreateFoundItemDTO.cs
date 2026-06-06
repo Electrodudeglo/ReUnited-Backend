@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ReUnited_Backend.DTOs
 {
-    public class CreateLostItemDTO : LostItemBaseDTO
+    public class CreateFoundItemDTO : FoundItemBaseDTO
     {
         [Required]
         public IFormFile Image { get; set; } = null!;

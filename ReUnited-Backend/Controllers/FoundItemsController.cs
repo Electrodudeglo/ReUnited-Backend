@@ -4,14 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 using ReUnited_Backend.DataModels;
 using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Services;
+using Supabase.Gotrue;
+using System.Security.Claims;
 
 namespace ReUnited_Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LostItemsController : ControllerBase
+    public class FoundItemsController : ControllerBase
     {
-        private readonly ILostItemService _lostItemService;
+        private readonly IFoundItemService _foundItemService;
         private readonly IImageStorageService _imageStorageService;
         private readonly ImageUrlService _imageUrlService;
         private static readonly string[] AllowedExtensions =
@@ -29,21 +31,21 @@ namespace ReUnited_Backend.Controllers
 
         private const long MaxFileSize = 5 * 1024 * 1024;
 
-        public LostItemsController(ILostItemService lostItemService, IImageStorageService imageStorageService, ImageUrlService imageUrlService)
+        public FoundItemsController(IFoundItemService foundItemService, IImageStorageService imageStorageService, ImageUrlService imageUrlService)
         {
-            _lostItemService = lostItemService;
+            _foundItemService = foundItemService;
             _imageStorageService = imageStorageService;
             _imageUrlService = imageUrlService;
         }
 
         [HttpGet]
-        public IActionResult GetLostItems()
+        public IActionResult GetFoundItems()
         {
             var items =
-                _lostItemService
-                    .GetLostItems()
+                _foundItemService
+                    .GetFoundItems()
                     .Select(item =>
-                        new LostItemResponseDTO
+                        new FoundItemResponseDTO
                         {
                             Id = item.Id,
                             City = item.City,
@@ -56,24 +58,28 @@ namespace ReUnited_Backend.Controllers
                                 item.AdditionalInformation,
                             Picture =
                                 _imageUrlService.GetPublicUrl(
-                                    item.Picture)
+                                    item.Picture),
+                            UserId = item.UserId
                         });
 
             return Ok(items);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetLostItemById(int id)
+        public IActionResult GetFoundItemById(int id)
         {
             var item =
-                _lostItemService.GetLostItemsById(id);
+                _foundItemService.GetFoundItemsById(id);
 
             if (item == null)
             {
                 return NotFound();
             }
 
-            var dto = new LostItemResponseDTO
+            Console.WriteLine(
+    $"Database UserId: {item.UserId}");
+
+            var dto = new FoundItemResponseDTO
             {
                 Id = item.Id,
                 City = item.City,
@@ -86,15 +92,17 @@ namespace ReUnited_Backend.Controllers
                     item.AdditionalInformation,
                 Picture =
                     _imageUrlService.GetPublicUrl(
-                        item.Picture)
+                        item.Picture),
+                UserId = item.UserId
             };
 
             return Ok(dto);
         }
 
+        [Authorize]
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddOneLostItem([FromForm] CreateLostItemDTO request)
+        public async Task<IActionResult> AddOneFoundItem([FromForm] CreateFoundItemDTO request)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
@@ -134,7 +142,19 @@ namespace ReUnited_Backend.Controllers
                 request.Image.FileName,
                 request.Image.ContentType);
 
-            var lostItem = new LostItem
+            var userId =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            Console.WriteLine($"User.Identity.IsAuthenticated = {User.Identity?.IsAuthenticated}");
+
+            Console.WriteLine($"UserId = {userId}");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var foundItem = new FoundItem
             {
                 City = request.City,
                 Postcode = request.Postcode,
@@ -143,59 +163,84 @@ namespace ReUnited_Backend.Controllers
                 Category = request.Category,
                 ItemDescription = request.ItemDescription,
                 AdditionalInformation = request.AdditionalInformation,
-                Picture = storagePath
+                Picture = storagePath,
+                UserId = userId
             };
 
-            LostItem addLostItem = _lostItemService.AddOneLostItem(lostItem);
+            FoundItem addFoundItem = _foundItemService.AddOneFoundItem(foundItem);
 
-            var response = new LostItemResponseDTO
+            var response = new FoundItemResponseDTO
             {
-                Id = addLostItem.Id,
-                City = addLostItem.City,
-                Postcode = addLostItem.Postcode,
-                Email = addLostItem.Email,
-                PhoneNumber = addLostItem.PhoneNumber,
-                Category = addLostItem.Category,
-                ItemDescription = addLostItem.ItemDescription,
-                AdditionalInformation = addLostItem.AdditionalInformation,
-                Picture = _imageUrlService.GetPublicUrl(addLostItem.Picture)
+                Id = addFoundItem.Id,
+                City = addFoundItem.City,
+                Postcode = addFoundItem.Postcode,
+                Email = addFoundItem.Email,
+                PhoneNumber = addFoundItem.PhoneNumber,
+                Category = addFoundItem.Category,
+                ItemDescription = addFoundItem.ItemDescription,
+                AdditionalInformation = addFoundItem.AdditionalInformation,
+                Picture = _imageUrlService.GetPublicUrl(addFoundItem.Picture),
+                UserId = addFoundItem.UserId
             };
 
             return CreatedAtAction(
-                nameof(GetLostItemById),
-                new { id = addLostItem.Id },
-                addLostItem);
+                nameof(GetFoundItemById),
+                new { id = addFoundItem.Id },
+                addFoundItem);
         }
 
-
+        [Authorize]
         [HttpPut("{id}")]
-        public IActionResult UpdateLostItemById(UpdateLostItemDTO lostItem, int id)
+        public IActionResult UpdateFoundItemById(UpdateFoundItemDTO foundItem, int id)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
             try
             {
-                var updatedLostItem = _lostItemService.UpdateLostItemById(lostItem, id);
+                var userId =
+                    User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                if (updatedLostItem == null) { return NotFound(); }
+                var currentFoundItem = _foundItemService.GetFoundItemsById(id);
 
-                return Ok(updatedLostItem);
+                if (currentFoundItem == null) { return NotFound(); }
+
+                if (currentFoundItem.UserId != userId)
+                {
+                    return Forbid();
+                }
+
+                var updatedFoundItem = _foundItemService.UpdateFoundItemById(foundItem, id);
+
+                return Ok(updatedFoundItem);
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while updating the lost item.");
+                return StatusCode(500, "An error occurred while updating the found item.");
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
-        public IActionResult DeleteLostItemById(int id)
+        public IActionResult DeleteFoundItemById(int id)
         {
-            var deletedLostItem = _lostItemService.DeleteLostItemById(id);
+            var userId =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            var currentFoundItem = _foundItemService.GetFoundItemsById(id);
 
-            if (!deletedLostItem)
+            if (currentFoundItem == null) { return NotFound(); }
+
+            if (currentFoundItem.UserId != userId)
             {
-                return NotFound($"Lost item with ID {id} not found");
+                return Forbid();
             }
+
+            var deletedFoundItem = _foundItemService.DeleteFoundItemById(id);
+
+            //if (!deletedFoundItem)
+            //{
+            //    return NotFound($"Found item with ID {id} not found");
+            //}
 
             return NoContent();
         }

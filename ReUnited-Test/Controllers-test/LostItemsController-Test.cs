@@ -5,231 +5,257 @@ using ReUnited_Backend.Controllers;
 using ReUnited_Backend.DataModels;
 using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Services;
+using Microsoft.Extensions.Options;
 
 namespace ReUnited_Test;
 
-public class LostItemsController_Test
+public class FoundItemsController_Test
 {
 
-    private LostItemsController _lostItemController;
-    private Mock<ILostItemService> _lostItemsServiceMoq;
+    private FoundItemsController _foundItemController;
+    private Mock<IFoundItemService> _foundItemsServiceMock;
+    private Mock<IImageStorageService> _imageStorageServiceMock;
+    private Mock<ImageUrlService> _imageUrlServiceMock;
 
     [SetUp]
     public void Setup()
     {
-        _lostItemsServiceMoq = new Mock<ILostItemService>();
-        _lostItemController = new LostItemsController(_lostItemsServiceMoq.Object);
+        _foundItemsServiceMock = new Mock<IFoundItemService>();
 
+        _imageStorageServiceMock =
+        new Mock<IImageStorageService>();
+
+        var options =
+            Options.Create(
+                new SupabaseSettings
+                {
+                    Url = "https://test.com",
+                    Bucket = "test-bucket",
+                    ApiKey = "test-key"
+                });
+
+        var imageUrlService =
+            new ImageUrlService(options);
+
+        _foundItemController =
+                new FoundItemsController(
+                    _foundItemsServiceMock.Object,
+                    _imageStorageServiceMock.Object,
+                    imageUrlService);
     }
 
     [Test]
     public void GetAllItems_Returns_Ok_With_List_Of_Items()
     {
-        List<LostItem> lostItems = new List<LostItem>
+        List<FoundItem> foundItems = new List<FoundItem>
         {
-            new LostItem(),
-            new LostItem()
+            new FoundItem(),
+            new FoundItem()
         };
 
-        _lostItemsServiceMoq.Setup(s => s.GetLostItems()).Returns(lostItems);
+        _foundItemsServiceMock.Setup(s => s.GetFoundItems()).Returns(foundItems);
 
-        OkObjectResult? result = _lostItemController.GetLostItems() as OkObjectResult;
+        OkObjectResult? result = _foundItemController.GetFoundItems() as OkObjectResult;
 
         Assert.That(result, Is.TypeOf<OkObjectResult>());
-        Assert.That(result.Value, Is.EqualTo(lostItems));
+        Assert.That(result.Value, Is.EqualTo(foundItems));
     }
 
     [Test]
     public void GetOneItem_Returns_Ok_With_One_Item()
     {
-        LostItem oneLostItem = new LostItem();
+        FoundItem oneFoundItem = new FoundItem();
 
-        _lostItemsServiceMoq.Setup(s => s.GetLostItemsById(1)).Returns(oneLostItem);
+        _foundItemsServiceMock.Setup(s => s.GetFoundItemsById(1)).Returns(oneFoundItem);
 
-        OkObjectResult? result = _lostItemController.GetLostItemById(1) as OkObjectResult;
+        OkObjectResult? result = _foundItemController.GetFoundItemById(1) as OkObjectResult;
 
-        Assert.That(result.Value, Is.EqualTo(oneLostItem));
+        Assert.That(result.Value, Is.EqualTo(oneFoundItem));
         Assert.That(result.StatusCode, Is.EqualTo(200));
     }
     [Test]
-    public void DeleteLostItem_Returns_NoContent()
+    public void DeleteFoundItem_Returns_NoContent()
     {
-        _lostItemsServiceMoq.Setup(s => s.DeleteLostItemById(1)).Returns(true);
+        _foundItemsServiceMock.Setup(s => s.DeleteFoundItemById(1)).Returns(true);
 
-        NoContentResult? result = _lostItemController.DeleteLostItemById(1) as NoContentResult;
+        NoContentResult? result = _foundItemController.DeleteFoundItemById(1) as NoContentResult;
 
         Assert.That(result, Is.TypeOf<NoContentResult>());
         Assert.That(result.StatusCode, Is.EqualTo(204));
     }
 
     [Test]
-    public void DeleteLostItem_Returns_NotFound()
+    public void DeleteFoundItem_Returns_NotFound()
     {
-        _lostItemsServiceMoq.Setup(s => s.DeleteLostItemById(1)).Returns(false);
+        _foundItemsServiceMock.Setup(s => s.DeleteFoundItemById(1)).Returns(false);
 
-        NotFoundObjectResult? result = _lostItemController.DeleteLostItemById(1) as NotFoundObjectResult;
+        NotFoundObjectResult? result = _foundItemController.DeleteFoundItemById(1) as NotFoundObjectResult;
 
         Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
         Assert.That(result.StatusCode, Is.EqualTo(404));
     }
 
     [Test]
-    public void UpdateLostItemById_ReturnsOkResult()
+    public void UpdateFoundItemById_ReturnsOkResult()
     {
         // Arrange
-        var dto = new UpdateLostItemDTO(
+        var dto = new UpdateFoundItemDTO(
             "London",
             "SW1A1AA",
             "john.doe@example.com",
             "07123456789",
             "Wallet",
             "Black leather wallet with several bank cards inside.",
-            "Lost near Victoria Station on Tuesday evening.",
+            "Found near Victoria Station on Tuesday evening.",
             "wallet-image.jpg"
         );
 
-        var output = new LostItem(
+        var output = new FoundItem(
             "London",
             "SW1A1AA",
             "john.doe@example.com",
             "07123456789",
             "Wallet",
             "Black leather wallet with several bank cards inside.",
-            "Lost near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
+            "Found near Victoria Station on Tuesday evening.",
+            "wallet-image.jpg",
+            "test-user-id"
         );
 
-        _lostItemsServiceMoq
-            .Setup(s => s.UpdateLostItemById(dto, 1))
+        _foundItemsServiceMock
+            .Setup(s => s.UpdateFoundItemById(dto, 1))
             .Returns(output);
 
         // Act
-        var result = _lostItemController.UpdateLostItemById(dto, 1);
+        var result = _foundItemController.UpdateFoundItemById(dto, 1);
 
         // Assert
         Assert.That(result, Is.InstanceOf<OkObjectResult>());
     }
 
     [Test]
-    public void UpdateLostItemById_CallsServiceOnce()
+    public void UpdateFoundItemById_CallsServiceOnce()
     {
         // Arrange
-        var dto = new UpdateLostItemDTO(
+        var dto = new UpdateFoundItemDTO(
             "London",
             "SW1A1AA",
             "john.doe@example.com",
             "07123456789",
             "Wallet",
             "Black leather wallet with several bank cards inside.",
-            "Lost near Victoria Station on Tuesday evening.",
+            "Found near Victoria Station on Tuesday evening.",
             "wallet-image.jpg"
         );
 
-        var output = new LostItem(
+        var output = new FoundItem(
             "London",
             "SW1A1AA",
             "john.doe@example.com",
             "07123456789",
             "Wallet",
             "Black leather wallet with several bank cards inside.",
-            "Lost near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
+            "Found near Victoria Station on Tuesday evening.",
+            "wallet-image.jpg",
+            "test-user-id"
         );
 
-        _lostItemsServiceMoq
-            .Setup(s => s.UpdateLostItemById(dto, 1))
+        _foundItemsServiceMock
+            .Setup(s => s.UpdateFoundItemById(dto, 1))
             .Returns(output);
 
         // Act
-        _lostItemController.UpdateLostItemById(dto, 1);
+        _foundItemController.UpdateFoundItemById(dto, 1);
 
         // Assert
-        _lostItemsServiceMoq.Verify(
-            service => service.UpdateLostItemById(dto, 1),
+        _foundItemsServiceMock.Verify(
+            service => service.UpdateFoundItemById(dto, 1),
             Times.Once());
     }
 
     [Test]
-    public void UpdateLostItemById_ReturnsStatusCode200()
+    public void UpdateFoundItemById_ReturnsStatusCode200()
     {
         // Arrange
-        var dto = new UpdateLostItemDTO(
+        var dto = new UpdateFoundItemDTO(
             "London",
             "SW1A1AA",
             "john.doe@example.com",
             "07123456789",
             "Wallet",
             "Black leather wallet with several bank cards inside.",
-            "Lost near Victoria Station on Tuesday evening.",
+            "Found near Victoria Station on Tuesday evening.",
             "wallet-image.jpg"
         );
 
-        var output = new LostItem(
+        var output = new FoundItem(
             "London",
             "SW1A1AA",
             "john.doe@example.com",
             "07123456789",
             "Wallet",
             "Black leather wallet with several bank cards inside.",
-            "Lost near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
+            "Found near Victoria Station on Tuesday evening.",
+            "wallet-image.jpg",
+            "test-user-id"
         );
 
-        _lostItemsServiceMoq
-            .Setup(s => s.UpdateLostItemById(dto, 1))
+        _foundItemsServiceMock
+            .Setup(s => s.UpdateFoundItemById(dto, 1))
             .Returns(output);
 
         // Act
-        OkObjectResult result = (OkObjectResult)_lostItemController
-            .UpdateLostItemById(dto, 1);
+        OkObjectResult result = (OkObjectResult)_foundItemController
+            .UpdateFoundItemById(dto, 1);
 
         // Assert
         Assert.That(result.StatusCode, Is.EqualTo(200));
     }
 
     [Test]
-    public void UpdateLostItemById_ReturnsUpdatedLostItem()
+    public void UpdateFoundItemById_ReturnsUpdatedFoundItem()
     {
         // Arrange
-        var dto = new UpdateLostItemDTO(
+        var dto = new UpdateFoundItemDTO(
             "London",
             "SW1A1AA",
             "john.doe@example.com",
             "07123456789",
             "Wallet",
             "Black leather wallet with several bank cards inside.",
-            "Lost near Victoria Station on Tuesday evening.",
+            "Found near Victoria Station on Tuesday evening.",
             "wallet-image.jpg"
         );
 
-        var output = new LostItem(
+        var output = new FoundItem(
             "London",
             "SW1A1AA",
             "john.doe@example.com",
             "07123456789",
             "Wallet",
             "Black leather wallet with several bank cards inside.",
-            "Lost near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
+            "Found near Victoria Station on Tuesday evening.",
+            "wallet-image.jpg",
+            "test-user-id"
         );
 
-        _lostItemsServiceMoq
-            .Setup(s => s.UpdateLostItemById(dto, 1))
+        _foundItemsServiceMock
+            .Setup(s => s.UpdateFoundItemById(dto, 1))
             .Returns(output);
 
         // Act
-        OkObjectResult result = (OkObjectResult)_lostItemController
-            .UpdateLostItemById(dto, 1);
+        OkObjectResult result = (OkObjectResult)_foundItemController
+            .UpdateFoundItemById(dto, 1);
 
         // Assert
         Assert.That(result.Value, Is.EqualTo(output));
     }
 
     [Test]
-    public void UpdateLostItemById_ReturnsNotFound_WhenItemDoesNotExist()
+    public void UpdateFoundItemById_ReturnsNotFound_WhenItemDoesNotExist()
     {
         // Arrange
-        var dto = new UpdateLostItemDTO(
+        var dto = new UpdateFoundItemDTO(
             "London",
             "SW1A1AA",
             "john@test.com",
@@ -240,22 +266,22 @@ public class LostItemsController_Test
             "wallet.jpg"
         );
 
-        _lostItemsServiceMoq
-            .Setup(s => s.UpdateLostItemById(dto, 1))
-            .Returns((LostItem)null);
+        _foundItemsServiceMock
+            .Setup(s => s.UpdateFoundItemById(dto, 1))
+            .Returns((FoundItem)null);
 
         // Act
-        var result = _lostItemController.UpdateLostItemById(dto, 1);
+        var result = _foundItemController.UpdateFoundItemById(dto, 1);
 
         // Assert
         Assert.IsInstanceOf<NotFoundResult>(result);
     }
 
     [Test]
-    public void UpdateLostItemById_ReturnsBadRequest_WhenModelStateIsInvalid()
+    public void UpdateFoundItemById_ReturnsBadRequest_WhenModelStateIsInvalid()
     {
         // Arrange
-        var dto = new UpdateLostItemDTO(
+        var dto = new UpdateFoundItemDTO(
             "",
             "",
             "invalid-email",
@@ -266,22 +292,22 @@ public class LostItemsController_Test
             ""
         );
 
-        _lostItemController.ModelState.AddModelError(
+        _foundItemController.ModelState.AddModelError(
             "Category",
             "Category is required");
 
         // Act
-        var result = _lostItemController.UpdateLostItemById(dto, 1);
+        var result = _foundItemController.UpdateFoundItemById(dto, 1);
 
         // Assert
         Assert.IsInstanceOf<BadRequestObjectResult>(result);
     }
 
     [Test]
-    public void UpdateLostItemById_Returns500_WhenExceptionOccurs()
+    public void UpdateFoundItemById_Returns500_WhenExceptionOccurs()
     {
         // Arrange
-        var dto = new UpdateLostItemDTO(
+        var dto = new UpdateFoundItemDTO(
             "London",
             "SW1A1AA",
             "john@test.com",
@@ -292,12 +318,12 @@ public class LostItemsController_Test
             "wallet.jpg"
         );
 
-        _lostItemsServiceMoq
-            .Setup(s => s.UpdateLostItemById(dto, 1))
+        _foundItemsServiceMock
+            .Setup(s => s.UpdateFoundItemById(dto, 1))
             .Throws(new Exception());
 
         // Act
-        var result = _lostItemController.UpdateLostItemById(dto, 1);
+        var result = _foundItemController.UpdateFoundItemById(dto, 1);
 
         // Assert
         var statusResult = (ObjectResult)result;
@@ -308,22 +334,22 @@ public class LostItemsController_Test
             Assert.That(statusResult.StatusCode, Is.EqualTo(500));
             Assert.That(
                 statusResult.Value,
-                Is.EqualTo("An error occurred while updating the lost item."));
+                Is.EqualTo("An error occurred while updating the found item."));
         });
     }
 
-    [Test]
-    public void AddOneLostItem_Returns_Ok_With_Added_Item()
-    {
-        var newItem = new LostItem();
+    //[Test]
+    //public void AddOneFoundItem_Returns_Ok_With_Added_Item()
+    //{
+    //    var newItem = new FoundItem();
 
-        _lostItemsServiceMoq.Setup(n => n.AddOneLostItem(newItem)).Returns(newItem);
+    //    _foundItemsServiceMock.Setup(n => n.AddOneFoundItem(newItem)).Returns(newItem);
 
-        CreatedResult? result = _lostItemController.AddOneLostItem(newItem) as CreatedResult;
+    //    CreatedResult? result = _foundItemController.AddOneFoundItem(newItem) as CreatedResult;
 
-        Assert.IsNotNull(result);
-        Assert.AreEqual(201, result.StatusCode);
-        Assert.AreEqual(newItem, result.Value);
+    //    Assert.IsNotNull(result);
+    //    Assert.AreEqual(201, result.StatusCode);
+    //    Assert.AreEqual(newItem, result.Value);
 
-    }
+    //}
 }

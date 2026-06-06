@@ -15,11 +15,8 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddScoped<ILostItemService, LostItemService>();
-builder.Services.AddScoped<ILostItemRepository, LostItemRepository>();
+builder.Services.AddScoped<IFoundItemService, FoundItemService>();
+builder.Services.AddScoped<IFoundItemRepository, FoundItemRepository>();
 
 builder.Services.AddHttpClient();
 
@@ -33,8 +30,8 @@ builder.Services
         !string.IsNullOrWhiteSpace(settings.Bucket),
         "Supabase Bucket is required")
     .Validate(settings =>
-        !string.IsNullOrWhiteSpace(settings.ApiKey),
-        "Supabase ApiKey is required")
+        !string.IsNullOrWhiteSpace(settings.AnonKey),
+        "Supabase AnonKey is required")
     .ValidateOnStart();
 
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
@@ -42,7 +39,7 @@ builder.Services.AddScoped<ImageUrlService>();
 
 // Add services to the container.
 
-builder.Services.AddDbContext<LostItemDbContext>(options =>
+builder.Services.AddDbContext<FoundItemDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("SupabaseDb")));
 
@@ -54,11 +51,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ExceptionHandlerMiddleware>();
 
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<LostItemDbContext>();
+    .AddDbContextCheck<FoundItemDbContext>();
 
 
-var supabaseURL = builder.Configuration["Supabase:URL"];
-var supabaseAnonKey = builder.Configuration["Supabase:Key"];
+var supabaseUrl = builder.Configuration["Supabase:Url"];
+var supabaseAnonKey = builder.Configuration["Supabase:AnonKey"];
 var supabaseIssuer = builder.Configuration["Supabase:Issuer"];
 var supabaseAudience = builder.Configuration["Supabase:Audience"];
 
@@ -68,7 +65,7 @@ var sOptions = new Supabase.SupabaseOptions
 {
     AutoConnectRealtime = true
 };
-var supabaseClient = new Supabase.Client(supabaseURL, supabaseAnonKey, sOptions);
+var supabaseClient = new Supabase.Client(supabaseUrl, supabaseAnonKey, sOptions);
 await supabaseClient.InitializeAsync();
 builder.Services.AddSingleton(supabaseClient);
 
@@ -79,11 +76,12 @@ builder.Services
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddJwtBearer(options =>
-    {
-        options.Authority = supabaseIssuer;
+.AddJwtBearer(options =>
+{
+    options.Authority = supabaseIssuer;
 
-        options.TokenValidationParameters = new TokenValidationParameters
+    options.TokenValidationParameters =
+        new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
             ValidateIssuer = true,
@@ -92,25 +90,32 @@ builder.Services
             ValidAudience = supabaseAudience,
             ValidateLifetime = true,
 
-            IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
-            {
-                var jwksUrl = $"{supabaseIssuer}/.well-known/jwks.json";
+            IssuerSigningKeyResolver =
+                (token, securityToken, kid, parameters) =>
+                {
+                    var jwksUrl =
+                        $"{supabaseIssuer}/.well-known/jwks.json";
 
-                using var client = new HttpClient();
-                var jwksJson = client.GetStringAsync(jwksUrl).Result;
-                var jwks = new JsonWebKeySet(jwksJson);
+                    using var client = new HttpClient();
 
-                return jwks.GetSigningKeys();
-            }
+                    var jwksJson =
+                        client.GetStringAsync(jwksUrl).Result;
+
+                    var jwks =
+                        new JsonWebKeySet(jwksJson);
+
+                    return jwks.GetSigningKeys();
+                }
         };
-    });
+});
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<LostItemDbContext>();
-    db.Database.EnsureCreated();
+    var db = scope.ServiceProvider.GetRequiredService<FoundItemDbContext>();
+    db.Database.Migrate();
     SeedData.Initialize(db);
 }
 

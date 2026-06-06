@@ -2,7 +2,7 @@
 
 namespace ReUnited_Backend.DTOs
 {
-    public class LostItemBaseDTO
+    public class FoundItemBaseDTO
     {
         [Required]
         [MaxLength(100)]

@@ -28,8 +28,8 @@ namespace ReUnited_Backend.Controllers
         public async Task<IActionResult> GenerateToken([FromBody] LoginModel login)
         {
             var supabase = new Client(
-                _config["Supabase:URL"],
-                _config["Supabase:Key"],
+                _config["Supabase:Url"],
+                _config["Supabase:AnonKey"],
                 new SupabaseOptions()
             );
 

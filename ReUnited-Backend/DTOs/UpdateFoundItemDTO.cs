@@ -2,12 +2,12 @@
 
 namespace ReUnited_Backend.DTOs
 {
-    public class UpdateLostItemDTO : LostItemBaseDTO
+    public class UpdateFoundItemDTO : FoundItemBaseDTO
     {
         [Required]
         public string Picture { get; set; } = string.Empty;
 
-        public UpdateLostItemDTO(
+        public UpdateFoundItemDTO(
             string city,
             string postcode,
             string email,

@@ -6,13 +6,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ReUnited_Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSupabase : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "LostItems",
+                name: "FoundItems",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -28,7 +28,7 @@ namespace ReUnited_Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LostItems", x => x.Id);
+                    table.PrimaryKey("PK_FoundItems", x => x.Id);
                 });
         }
 
@@ -36,7 +36,7 @@ namespace ReUnited_Backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "LostItems");
+                name: "FoundItems");
         }
     }
 }

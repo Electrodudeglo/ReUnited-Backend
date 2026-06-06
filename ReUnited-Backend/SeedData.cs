@@ -7,15 +7,15 @@ namespace ReUnited_Backend
 {
     public class SeedData
     {
-        private static readonly string _filePath = (".\\Resources\\LostItems.json");
-        public static void Initialize(LostItemDbContext lostItemDbContext)
+        private static readonly string _filePath = (".\\Resources\\FoundItems.json");
+        public static void Initialize(FoundItemDbContext foundItemDbContext)
         {
-            if (lostItemDbContext.LostItems.Any()) return;
+            if (foundItemDbContext.FoundItems.Any()) return;
 
-            var lostItems = Utils.GetFileContent<LostItem>(_filePath);
+            var foundItems = Utils.GetFileContent<FoundItem>(_filePath);
 
-            lostItemDbContext.LostItems.AddRange(lostItems);
-            lostItemDbContext.SaveChanges();
+            foundItemDbContext.FoundItems.AddRange(foundItems);
+            foundItemDbContext.SaveChanges();
         }
     }
 }
