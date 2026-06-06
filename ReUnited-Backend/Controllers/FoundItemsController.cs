@@ -92,6 +92,7 @@ namespace ReUnited_Backend.Controllers
             return Ok(dto);
         }
 
+        [Authorize]
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> AddOneFoundItem([FromForm] CreateFoundItemDTO request)
@@ -167,7 +168,7 @@ namespace ReUnited_Backend.Controllers
                 addFoundItem);
         }
 
-
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult UpdateFoundItemById(UpdateFoundItemDTO foundItem, int id)
         {
@@ -187,6 +188,7 @@ namespace ReUnited_Backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteFoundItemById(int id)
         {
