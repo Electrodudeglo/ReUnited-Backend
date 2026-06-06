@@ -82,7 +82,8 @@ public class FoundItemService_Test
                 "Wallet",
                 "Black leather wallet",
                 "Found near station",
-                "wallet.jpg"
+                "wallet.jpg",
+                "test-user-id"
             );
 
             _foundItemRepoMock
@@ -121,7 +122,8 @@ public class FoundItemService_Test
                 "Wallet",
                 "Black leather wallet",
                 "Found near station",
-                "wallet.jpg"
+                "wallet.jpg",
+                "test-user-id"
             );
 
             _foundItemRepoMock
@@ -185,7 +187,8 @@ public class FoundItemService_Test
                 "Phone",
                 "iPhone 15",
                 "Blue case",
-                "phone.jpg"
+                "phone.jpg",
+                "test-user-id"
             );
 
             _foundItemRepoMock
