@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReUnited_Backend.DataModels;
 using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Services;
+using Supabase.Gotrue;
 
 namespace ReUnited_Backend.Controllers
 {
@@ -135,6 +136,9 @@ namespace ReUnited_Backend.Controllers
                 request.Image.FileName,
                 request.Image.ContentType);
 
+            var userId =
+                User.FindFirst("sub")?.Value;
+
             var foundItem = new FoundItem
             {
                 City = request.City,
@@ -144,7 +148,8 @@ namespace ReUnited_Backend.Controllers
                 Category = request.Category,
                 ItemDescription = request.ItemDescription,
                 AdditionalInformation = request.AdditionalInformation,
-                Picture = storagePath
+                Picture = storagePath,
+                UserId = userId!
             };
 
             FoundItem addFoundItem = _foundItemService.AddOneFoundItem(foundItem);
