@@ -24,7 +24,7 @@ namespace ReUnited_Backend.Services
 
             var supabaseUrl = _settings.Url;
 
-            var apiKey = _settings.ApiKey;
+            var serviceRoleKey = _settings.ServiceRoleKey;
 
             var fileName =
                 $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
@@ -43,8 +43,8 @@ namespace ReUnited_Backend.Services
                     HttpMethod.Post,
                     $"{supabaseUrl}/storage/v1/object/{storagePath}");
 
-            request.Headers.Add("apikey", apiKey);
-            request.Headers.Add("Authorization", $"Bearer {apiKey}");
+            request.Headers.Add("apikey", serviceRoleKey);
+            request.Headers.Add("Authorization", $"Bearer {serviceRoleKey}");
 
             request.Content = content;
 
