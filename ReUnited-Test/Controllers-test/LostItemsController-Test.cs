@@ -118,7 +118,8 @@ public class FoundItemsController_Test
             "Wallet",
             "Black leather wallet with several bank cards inside.",
             "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
+            "wallet-image.jpg",
+            "test-user-id"
         );
 
         _foundItemsServiceMock
@@ -155,7 +156,8 @@ public class FoundItemsController_Test
             "Wallet",
             "Black leather wallet with several bank cards inside.",
             "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
+            "wallet-image.jpg",
+            "test-user-id"
         );
 
         _foundItemsServiceMock
@@ -194,7 +196,8 @@ public class FoundItemsController_Test
             "Wallet",
             "Black leather wallet with several bank cards inside.",
             "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
+            "wallet-image.jpg",
+            "test-user-id"
         );
 
         _foundItemsServiceMock
@@ -232,7 +235,8 @@ public class FoundItemsController_Test
             "Wallet",
             "Black leather wallet with several bank cards inside.",
             "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
+            "wallet-image.jpg",
+            "test-user-id"
         );
 
         _foundItemsServiceMock
