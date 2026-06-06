@@ -181,9 +181,16 @@ namespace ReUnited_Backend.Controllers
 
             try
             {
+                var userId = User.FindFirst("sub")?.Value;
+
                 var updatedFoundItem = _foundItemService.UpdateFoundItemById(foundItem, id);
 
                 if (updatedFoundItem == null) { return NotFound(); }
+
+                if (updatedFoundItem.UserId != userId)
+                {
+                    return Forbid();
+                }
 
                 return Ok(updatedFoundItem);
             }
