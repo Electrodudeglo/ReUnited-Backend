@@ -15,7 +15,8 @@
             string itemDescription,
             string additionalInformation,
             string picture,
-            string userId)
+            string userId,
+            DateOnly dateFound)
         {
             City = city;
             Postcode = postcode;
@@ -26,7 +27,9 @@
             AdditionalInformation = additionalInformation;
             Picture = picture;
             UserId = userId;
+            DateFound = dateFound;
         }
+
         [Key]
         public int Id { get; set; }
 
