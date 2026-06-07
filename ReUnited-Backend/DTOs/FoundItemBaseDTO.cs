@@ -5,6 +5,9 @@ namespace ReUnited_Backend.DTOs
     public class FoundItemBaseDTO
     {
         [Required]
+        public DateOnly DateFound { get; set; }
+
+        [Required]
         [MaxLength(100)]
         public string City { get; set; } = string.Empty;
 
