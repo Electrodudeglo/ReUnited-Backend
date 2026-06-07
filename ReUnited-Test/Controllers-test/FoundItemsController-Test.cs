@@ -46,6 +46,21 @@ public class FoundItemsController_Test
                     _foundItemsServiceMock.Object,
                     _imageStorageServiceMock.Object,
                     imageUrlService);
+
+        TestItem = new FoundItem
+        {
+            Id = 1,
+            DateFound = new DateOnly(2025, 6, 1),
+            City = "London",
+            Postcode = "SW1A1AA",
+            Email = "john@test.com",
+            PhoneNumber = "07123456789",
+            Category = "Wallet",
+            ItemDescription = "Wallet",
+            AdditionalInformation = "Black wallet",
+            Picture = "FoundItems/test.jpg",
+            UserId = TestUserId
+        };
     }
     private void SetAuthenticatedUser(string userId)
     {
