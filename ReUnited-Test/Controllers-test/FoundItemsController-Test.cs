@@ -18,33 +18,8 @@ public class FoundItemsController_Test
     private Mock<IFoundItemService> _foundItemsServiceMock;
     private Mock<IImageStorageService> _imageStorageServiceMock;
     private Mock<ImageUrlService> _imageUrlServiceMock;
-    private void SetAuthenticatedUser(string userId)
-    {
-        var claims = new List<Claim>
-    {
-        new Claim(
-            ClaimTypes.NameIdentifier,
-            userId)
-    };
-
-        var identity =
-            new ClaimsIdentity(
-                claims,
-                "TestAuth");
-
-        var principal =
-            new ClaimsPrincipal(identity);
-
-        _foundItemController.ControllerContext =
-            new ControllerContext
-            {
-                HttpContext =
-                    new DefaultHttpContext
-                    {
-                        User = principal
-                    }
-            };
-    }
+    private const string TestUserId = "test-user-id";
+    private FoundItem TestItem;
 
     [SetUp]
     public void Setup()
@@ -71,6 +46,33 @@ public class FoundItemsController_Test
                     _foundItemsServiceMock.Object,
                     _imageStorageServiceMock.Object,
                     imageUrlService);
+    }
+    private void SetAuthenticatedUser(string userId)
+    {
+        var claims = new List<Claim>
+    {
+        new Claim(
+            ClaimTypes.NameIdentifier,
+            userId)
+    };
+
+        var identity =
+            new ClaimsIdentity(
+                claims,
+                "TestAuth");
+
+        var principal =
+            new ClaimsPrincipal(identity);
+
+        _foundItemController.ControllerContext =
+            new ControllerContext
+            {
+                HttpContext =
+                    new DefaultHttpContext
+                    {
+                        User = principal
+                    }
+            };
     }
 
     [Test]
