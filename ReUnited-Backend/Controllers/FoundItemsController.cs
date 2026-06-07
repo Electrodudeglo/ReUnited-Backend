@@ -76,9 +76,6 @@ namespace ReUnited_Backend.Controllers
                 return NotFound();
             }
 
-            Console.WriteLine(
-    $"Database UserId: {item.UserId}");
-
             var dto = new FoundItemResponseDTO
             {
                 Id = item.Id,
@@ -144,10 +141,6 @@ namespace ReUnited_Backend.Controllers
 
             var userId =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            Console.WriteLine($"User.Identity.IsAuthenticated = {User.Identity?.IsAuthenticated}");
-
-            Console.WriteLine($"UserId = {userId}");
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -228,19 +221,17 @@ namespace ReUnited_Backend.Controllers
             
             var currentFoundItem = _foundItemService.GetFoundItemsById(id);
 
-            if (currentFoundItem == null) { return NotFound(); }
+            if (currentFoundItem == null) 
+            { 
+                return NotFound($"Found item with ID {id} not found"); 
+            }
 
             if (currentFoundItem.UserId != userId)
             {
                 return Forbid();
             }
 
-            var deletedFoundItem = _foundItemService.DeleteFoundItemById(id);
-
-            //if (!deletedFoundItem)
-            //{
-            //    return NotFound($"Found item with ID {id} not found");
-            //}
+            _foundItemService.DeleteFoundItemById(id);
 
             return NoContent();
         }
