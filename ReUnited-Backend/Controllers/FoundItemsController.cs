@@ -168,6 +168,7 @@ namespace ReUnited_Backend.Controllers
 
             var response = new FoundItemResponseDTO
             {
+                DateFound = addFoundItem.DateFound,
                 Id = addFoundItem.Id,
                 City = addFoundItem.City,
                 Postcode = addFoundItem.Postcode,
