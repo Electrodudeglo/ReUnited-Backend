@@ -6,6 +6,7 @@ namespace ReUnited_Backend.Services
     public interface IImageStorageService
     {
         Task<string> UploadAsync(Stream stream, string originalFilename, string contentType);
+        Task DeleteAsync(string storagePath);
     }
     public class ImageStorageService : IImageStorageService
     {
