@@ -165,41 +165,21 @@ public class FoundItemsController_Test
     }
 
     [Test]
-    public async Task DeleteFoundItem_Returns_Forbid_When_User_Does_Not_Own_Item()
+    public async Task DeleteFoundItem_Returns_Forbid_When_NotOwner()
     {
-        // Arrange
-
-        SetAuthenticatedUser(TestUserId);
-
-        var item = new FoundItem
-        {
-            Id = 1,
-            DateFound = new DateOnly(2025, 6, 1),
-            City = "London",
-            Postcode = "SW1A1AA",
-            Email = "john@example.com",
-            PhoneNumber = "07123456789",
-            Category = "Electronics",
-            ItemDescription = "Phone",
-            AdditionalInformation = "Test item",
-            Picture = "FoundItems/test.jpg",
-            UserId = "user-2"
-        };
+        SetAuthenticatedUser("different-user");
 
         _foundItemsServiceMock
             .Setup(x => x.GetFoundItemsById(1))
-            .Returns(item);
-
-        // Act
+            .Returns(TestItem);
 
         var result =
-            await _foundItemController.DeleteFoundItemById(1);
-
-        // Assert
+            await _foundItemController
+                .DeleteFoundItemById(1);
 
         Assert.That(
             result,
-            Is.InstanceOf<ForbidResult>());
+            Is.TypeOf<ForbidResult>());
     }
 
     [Test]
