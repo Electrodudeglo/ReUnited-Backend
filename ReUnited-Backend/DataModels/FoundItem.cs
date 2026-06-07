@@ -31,6 +31,12 @@
         public int Id { get; set; }
 
         [Required]
+        public string UserId { get; set; } = string.Empty;
+
+        [Required]
+        public DateOnly DateFound { get; set; }
+
+        [Required]
         [MaxLength(100)]
         public string City { get; set; } = string.Empty;
 
@@ -60,8 +66,6 @@
         [Required]
         public string Picture { get; set; } = string.Empty;
 
-        [Required]
-        public string UserId { get; set; } = string.Empty;
 
     }
 }
