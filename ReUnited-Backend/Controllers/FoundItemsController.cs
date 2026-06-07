@@ -152,6 +152,7 @@ namespace ReUnited_Backend.Controllers
 
             var foundItem = new FoundItem
             {
+                DateFound = request.DateFound,
                 City = request.City,
                 Postcode = request.Postcode,
                 Email = request.Email,
