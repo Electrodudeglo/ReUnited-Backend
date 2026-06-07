@@ -50,6 +50,7 @@ namespace ReUnited_Backend.Controllers
                     .Select(item =>
                         new FoundItemResponseDTO
                         {
+                            DateFound = item.DateFound,
                             Id = item.Id,
                             City = item.City,
                             Postcode = item.Postcode,
@@ -81,6 +82,7 @@ namespace ReUnited_Backend.Controllers
 
             var dto = new FoundItemResponseDTO
             {
+                DateFound = item.DateFound,
                 Id = item.Id,
                 City = item.City,
                 Postcode = item.Postcode,
@@ -277,6 +279,7 @@ namespace ReUnited_Backend.Controllers
                     .Where(item => item.UserId == userId)
                     .Select(item => new FoundItemResponseDTO
                     {
+                        DateFound = item.DateFound,
                         Id = item.Id,
                         City = item.City,
                         Postcode = item.Postcode,
