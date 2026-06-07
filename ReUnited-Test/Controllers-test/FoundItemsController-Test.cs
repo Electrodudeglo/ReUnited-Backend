@@ -142,14 +142,64 @@ public class FoundItemsController_Test
     }
 
     [Test]
-    public void DeleteFoundItem_Returns_NotFound()
+    public async Task DeleteFoundItem_Returns_NotFound_When_Item_Missing()
     {
-        _foundItemsServiceMock.Setup(s => s.DeleteFoundItemById(1)).Returns(false);
+        // Arrange
+        SetAuthenticatedUser(TestUserId);
 
-        NotFoundObjectResult? result = _foundItemController.DeleteFoundItemById(1) as NotFoundObjectResult;
+        _foundItemsServiceMock
+            .Setup(s => s.GetFoundItemsById(1))
+            .Returns((FoundItem?)null);
 
-        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
-        Assert.That(result.StatusCode, Is.EqualTo(404));
+        // Act
+        var result =
+            await _foundItemController.DeleteFoundItemById(1);
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+
+        var notFound =
+            (NotFoundObjectResult)result;
+
+        Assert.That(notFound.StatusCode, Is.EqualTo(404));
+    }
+
+    [Test]
+    public async Task DeleteFoundItem_Returns_Forbid_When_User_Does_Not_Own_Item()
+    {
+        // Arrange
+
+        SetAuthenticatedUser(TestUserId);
+
+        var item = new FoundItem
+        {
+            Id = 1,
+            DateFound = new DateOnly(2025, 6, 1),
+            City = "London",
+            Postcode = "SW1A1AA",
+            Email = "john@example.com",
+            PhoneNumber = "07123456789",
+            Category = "Electronics",
+            ItemDescription = "Phone",
+            AdditionalInformation = "Test item",
+            Picture = "FoundItems/test.jpg",
+            UserId = "user-2"
+        };
+
+        _foundItemsServiceMock
+            .Setup(x => x.GetFoundItemsById(1))
+            .Returns(item);
+
+        // Act
+
+        var result =
+            await _foundItemController.DeleteFoundItemById(1);
+
+        // Assert
+
+        Assert.That(
+            result,
+            Is.InstanceOf<ForbidResult>());
     }
 
     [Test]
