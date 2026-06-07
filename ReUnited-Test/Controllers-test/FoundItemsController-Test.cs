@@ -120,14 +120,25 @@ public class FoundItemsController_Test
         Assert.That(result.StatusCode, Is.EqualTo(200));
     }
     [Test]
-    public void DeleteFoundItem_Returns_NoContent()
+    public async Task DeleteFoundItem_Returns_NoContent()
     {
-        _foundItemsServiceMock.Setup(s => s.DeleteFoundItemById(1)).Returns(true);
+        SetAuthenticatedUser(TestUserId);
 
-        NoContentResult? result = _foundItemController.DeleteFoundItemById(1) as NoContentResult;
+        _foundItemsServiceMock
+            .Setup(x => x.GetFoundItemsById(1))
+            .Returns(TestItem);
 
-        Assert.That(result, Is.TypeOf<NoContentResult>());
-        Assert.That(result.StatusCode, Is.EqualTo(204));
+        _foundItemsServiceMock
+            .Setup(x => x.DeleteFoundItemById(1))
+            .Returns(true);
+
+        var result =
+            await _foundItemController
+                .DeleteFoundItemById(1);
+
+        Assert.That(
+            result,
+            Is.TypeOf<NoContentResult>());
     }
 
     [Test]
