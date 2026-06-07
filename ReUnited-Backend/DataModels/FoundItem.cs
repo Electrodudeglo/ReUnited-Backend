@@ -15,7 +15,8 @@
             string itemDescription,
             string additionalInformation,
             string picture,
-            string userId)
+            string userId,
+            DateOnly dateFound)
         {
             City = city;
             Postcode = postcode;
@@ -26,9 +27,17 @@
             AdditionalInformation = additionalInformation;
             Picture = picture;
             UserId = userId;
+            DateFound = dateFound;
         }
+
         [Key]
         public int Id { get; set; }
+
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+
+        [Required]
+        public DateOnly DateFound { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -60,8 +69,6 @@
         [Required]
         public string Picture { get; set; } = string.Empty;
 
-        [Required]
-        public string UserId { get; set; } = string.Empty;
 
     }
 }

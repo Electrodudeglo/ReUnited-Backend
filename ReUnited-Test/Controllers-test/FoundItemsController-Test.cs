@@ -6,6 +6,8 @@ using ReUnited_Backend.DataModels;
 using ReUnited_Backend.DTOs;
 using ReUnited_Backend.Services;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace ReUnited_Test;
 
@@ -16,6 +18,8 @@ public class FoundItemsController_Test
     private Mock<IFoundItemService> _foundItemsServiceMock;
     private Mock<IImageStorageService> _imageStorageServiceMock;
     private Mock<ImageUrlService> _imageUrlServiceMock;
+    private const string TestUserId = "test-user-id";
+    private FoundItem TestItem;
 
     [SetUp]
     public void Setup()
@@ -31,7 +35,7 @@ public class FoundItemsController_Test
                 {
                     Url = "https://test.com",
                     Bucket = "test-bucket",
-                    ApiKey = "test-key"
+                    AnonKey = "test-key"
                 });
 
         var imageUrlService =
@@ -42,8 +46,63 @@ public class FoundItemsController_Test
                     _foundItemsServiceMock.Object,
                     _imageStorageServiceMock.Object,
                     imageUrlService);
+
+        TestItem = new FoundItem
+        {
+            Id = 1,
+            DateFound = new DateOnly(2025, 6, 1),
+            City = "London",
+            Postcode = "SW1A1AA",
+            Email = "john@test.com",
+            PhoneNumber = "07123456789",
+            Category = "Wallet",
+            ItemDescription = "Wallet",
+            AdditionalInformation = "Black wallet",
+            Picture = "FoundItems/test.jpg",
+            UserId = TestUserId
+        };
+    }
+    private void SetAuthenticatedUser(string userId)
+    {
+        var claims = new List<Claim>
+    {
+        new Claim(
+            ClaimTypes.NameIdentifier,
+            userId)
+    };
+
+        var identity =
+            new ClaimsIdentity(
+                claims,
+                "TestAuth");
+
+        var principal =
+            new ClaimsPrincipal(identity);
+
+        _foundItemController.ControllerContext =
+            new ControllerContext
+            {
+                HttpContext =
+                    new DefaultHttpContext
+                    {
+                        User = principal
+                    }
+            };
     }
 
+    private UpdateFoundItemDTO CreateUpdateDto()
+    {
+        return new UpdateFoundItemDTO
+        {
+            City = "London",
+            Postcode = "SW1A1AA",
+            Email = "john@test.com",
+            PhoneNumber = "07123456789",
+            Category = "Wallet",
+            ItemDescription = "Updated Wallet",
+            AdditionalInformation = "Updated Info",
+        };
+    }
     [Test]
     public void GetAllItems_Returns_Ok_With_List_Of_Items()
     {
@@ -74,25 +133,66 @@ public class FoundItemsController_Test
         Assert.That(result.StatusCode, Is.EqualTo(200));
     }
     [Test]
-    public void DeleteFoundItem_Returns_NoContent()
+    public async Task DeleteFoundItem_Returns_NoContent()
     {
-        _foundItemsServiceMock.Setup(s => s.DeleteFoundItemById(1)).Returns(true);
+        SetAuthenticatedUser(TestUserId);
 
-        NoContentResult? result = _foundItemController.DeleteFoundItemById(1) as NoContentResult;
+        _foundItemsServiceMock
+            .Setup(x => x.GetFoundItemsById(1))
+            .Returns(TestItem);
 
-        Assert.That(result, Is.TypeOf<NoContentResult>());
-        Assert.That(result.StatusCode, Is.EqualTo(204));
+        _foundItemsServiceMock
+            .Setup(x => x.DeleteFoundItemById(1))
+            .Returns(true);
+
+        var result =
+            await _foundItemController
+                .DeleteFoundItemById(1);
+
+        Assert.That(
+            result,
+            Is.TypeOf<NoContentResult>());
     }
 
     [Test]
-    public void DeleteFoundItem_Returns_NotFound()
+    public async Task DeleteFoundItem_Returns_NotFound_When_Item_Missing()
     {
-        _foundItemsServiceMock.Setup(s => s.DeleteFoundItemById(1)).Returns(false);
+        // Arrange
+        SetAuthenticatedUser(TestUserId);
 
-        NotFoundObjectResult? result = _foundItemController.DeleteFoundItemById(1) as NotFoundObjectResult;
+        _foundItemsServiceMock
+            .Setup(s => s.GetFoundItemsById(1))
+            .Returns((FoundItem?)null);
 
-        Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
-        Assert.That(result.StatusCode, Is.EqualTo(404));
+        // Act
+        var result =
+            await _foundItemController.DeleteFoundItemById(1);
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+
+        var notFound =
+            (NotFoundObjectResult)result;
+
+        Assert.That(notFound.StatusCode, Is.EqualTo(404));
+    }
+
+    [Test]
+    public async Task DeleteFoundItem_Returns_Forbid_When_NotOwner()
+    {
+        SetAuthenticatedUser("different-user");
+
+        _foundItemsServiceMock
+            .Setup(x => x.GetFoundItemsById(1))
+            .Returns(TestItem);
+
+        var result =
+            await _foundItemController
+                .DeleteFoundItemById(1);
+
+        Assert.That(
+            result,
+            Is.TypeOf<ForbidResult>());
     }
 
     [Test]
@@ -338,18 +438,18 @@ public class FoundItemsController_Test
         });
     }
 
-    //[Test]
-    //public void AddOneFoundItem_Returns_Ok_With_Added_Item()
-    //{
-    //    var newItem = new FoundItem();
+    [Test]
+    public void AddOneFoundItem_Returns_Ok_With_Added_Item()
+    {
+        var newItem = new FoundItem();
 
-    //    _foundItemsServiceMock.Setup(n => n.AddOneFoundItem(newItem)).Returns(newItem);
+        _foundItemsServiceMock.Setup(n => n.AddOneFoundItem(newItem)).Returns(newItem);
 
-    //    CreatedResult? result = _foundItemController.AddOneFoundItem(newItem) as CreatedResult;
+        CreatedResult? result = _foundItemController.AddOneFoundItem(newItem) as CreatedResult;
 
-    //    Assert.IsNotNull(result);
-    //    Assert.AreEqual(201, result.StatusCode);
-    //    Assert.AreEqual(newItem, result.Value);
+        Assert.IsNotNull(result);
+        Assert.AreEqual(201, result.StatusCode);
+        Assert.AreEqual(newItem, result.Value);
 
-    //}
+    }
 }

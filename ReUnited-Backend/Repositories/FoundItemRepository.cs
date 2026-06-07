@@ -49,6 +49,7 @@
             var currentFoundItem = _dbContext.FoundItems.FirstOrDefault(x => x.Id == id);
             if (currentFoundItem != null)
             {
+                currentFoundItem.DateFound = dto.DateFound;
                 currentFoundItem.City = dto.City;
                 currentFoundItem.Postcode = dto.Postcode;
                 currentFoundItem.Email = dto.Email;
