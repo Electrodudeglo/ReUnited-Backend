@@ -1,5 +1,6 @@
-﻿using System.Net.Http.Headers;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
+using Supabase.Interfaces;
+using System.Net.Http.Headers;
 
 namespace ReUnited_Backend.Services
 {
@@ -17,6 +18,31 @@ namespace ReUnited_Backend.Services
         {
             _httpClient = httpClient;
             _settings = options.Value;
+        }
+
+        public async Task DeleteAsync(string storagePath)
+        {
+            var supabaseUrl = _settings.Url;
+
+            var serviceRoleKey = _settings.ServiceRoleKey;
+
+            using var request =
+                new HttpRequestMessage(
+                    HttpMethod.Delete,
+                    $"{supabaseUrl}/storage/v1/object/{storagePath}");
+
+            request.Headers.Add(
+                "apikey",
+                serviceRoleKey);
+
+            request.Headers.Add(
+                "Authorization",
+                $"Bearer {serviceRoleKey}");
+
+            var response =
+                await _httpClient.SendAsync(request);
+
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task<string> UploadAsync(Stream stream, string originalFileName, string contentType)
