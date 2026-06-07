@@ -258,7 +258,7 @@ namespace ReUnited_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet("mine")]
+        [HttpGet("myitems")]
         public IActionResult GetMyFoundItems()
         {
             var userId =
@@ -273,6 +273,20 @@ namespace ReUnited_Backend.Controllers
                 _foundItemService
                     .GetFoundItems()
                     .Where(item => item.UserId == userId)
+                    .Select(item => new FoundItemResponseDTO
+                    {
+                        Id = item.Id,
+                        City = item.City,
+                        Postcode = item.Postcode,
+                        Email = item.Email,
+                        PhoneNumber = item.PhoneNumber,
+                        Category = item.Category,
+                        ItemDescription = item.ItemDescription,
+                        AdditionalInformation = item.AdditionalInformation,
+                        UserId = item.UserId,
+                        Picture =
+                            _imageUrlService.GetPublicUrl(item.Picture)
+                    })
                     .ToList();
 
             return Ok(items);
