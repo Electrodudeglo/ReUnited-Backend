@@ -90,6 +90,19 @@ public class FoundItemsController_Test
             };
     }
 
+    private UpdateFoundItemDTO CreateUpdateDto()
+    {
+        return new UpdateFoundItemDTO
+        {
+            City = "London",
+            Postcode = "SW1A1AA",
+            Email = "john@test.com",
+            PhoneNumber = "07123456789",
+            Category = "Wallet",
+            ItemDescription = "Updated Wallet",
+            AdditionalInformation = "Updated Info",
+        };
+    }
     [Test]
     public void GetAllItems_Returns_Ok_With_List_Of_Items()
     {
