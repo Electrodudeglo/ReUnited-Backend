@@ -12,6 +12,12 @@ public class LoginModel
     public string Password { get; set; } = String.Empty;
 }
 
+public class RegisterRequest
+{
+    public string Email { get; set; } = "";
+    public string Password { get; set; } = "";
+}
+
 namespace ReUnited_Backend.Controllers
 {
     [ApiController]
@@ -36,6 +42,22 @@ namespace ReUnited_Backend.Controllers
             var session = await supabase.Auth.SignIn(login.Username, login.Password);
 
             return Ok(session?.AccessToken);
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        {
+            var supabase = new Client(
+                _config["Supabase:Url"],
+                _config["Supabase:AnonKey"],
+                new SupabaseOptions());
+
+            var result =
+                await supabase.Auth.SignUp(
+                    request.Email,
+                    request.Password);
+
+            return Ok();
         }
     }
 }
