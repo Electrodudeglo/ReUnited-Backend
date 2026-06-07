@@ -31,7 +31,10 @@ namespace ReUnited_Backend.Controllers
 
         private const long MaxFileSize = 5 * 1024 * 1024;
 
-        public FoundItemsController(IFoundItemService foundItemService, IImageStorageService imageStorageService, ImageUrlService imageUrlService)
+        public FoundItemsController(
+            IFoundItemService foundItemService,
+            IImageStorageService imageStorageService,
+            ImageUrlService imageUrlService)
         {
             _foundItemService = foundItemService;
             _imageStorageService = imageStorageService;
@@ -214,16 +217,16 @@ namespace ReUnited_Backend.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public IActionResult DeleteFoundItemById(int id)
+        public async Task<IActionResult> DeleteFoundItemById(int id)
         {
             var userId =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+
             var currentFoundItem = _foundItemService.GetFoundItemsById(id);
 
-            if (currentFoundItem == null) 
-            { 
-                return NotFound($"Found item with ID {id} not found"); 
+            if (currentFoundItem == null)
+            {
+                return NotFound($"Found item with ID {id} not found");
             }
 
             if (currentFoundItem.UserId != userId)
@@ -231,8 +234,26 @@ namespace ReUnited_Backend.Controllers
                 return Forbid();
             }
 
-            _foundItemService.DeleteFoundItemById(id);
+            try
+            {
+                await _imageStorageService.DeleteAsync(
+                    currentFoundItem.Picture);
 
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(
+                    $"Image deletion failed: {ex.Message}");
+            }
+
+            var deleted =
+                _foundItemService.DeleteFoundItemById(id);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
             return NoContent();
         }
 
