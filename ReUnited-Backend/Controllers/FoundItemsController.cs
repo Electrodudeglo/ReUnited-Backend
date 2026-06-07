@@ -235,5 +235,26 @@ namespace ReUnited_Backend.Controllers
 
             return NoContent();
         }
+
+        [Authorize]
+        [HttpGet("mine")]
+        public IActionResult GetMyFoundItems()
+        {
+            var userId =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var items =
+                _foundItemService
+                    .GetFoundItems()
+                    .Where(item => item.UserId == userId)
+                    .ToList();
+
+            return Ok(items);
+        }
     }
 }
