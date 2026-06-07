@@ -49,7 +49,14 @@
             var currentFoundItem = _dbContext.FoundItems.FirstOrDefault(x => x.Id == id);
             if (currentFoundItem != null)
             {
-                _dbContext.Entry(currentFoundItem).CurrentValues.SetValues(dto);
+                currentFoundItem.City = dto.City;
+                currentFoundItem.Postcode = dto.Postcode;
+                currentFoundItem.Email = dto.Email;
+                currentFoundItem.PhoneNumber = dto.PhoneNumber;
+                currentFoundItem.Category = dto.Category;
+                currentFoundItem.ItemDescription = dto.ItemDescription;
+                currentFoundItem.AdditionalInformation = dto.AdditionalInformation;
+                
                 _dbContext.SaveChanges();
                 return currentFoundItem;
             }
