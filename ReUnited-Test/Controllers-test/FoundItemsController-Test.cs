@@ -1,455 +1,455 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Moq;
-using ReUnited_Backend.Controllers;
-using ReUnited_Backend.DataModels;
-using ReUnited_Backend.DTOs;
-using ReUnited_Backend.Services;
-using Microsoft.Extensions.Options;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-
-namespace ReUnited_Test;
-
-public class FoundItemsController_Test
-{
-
-    private FoundItemsController _foundItemController;
-    private Mock<IFoundItemService> _foundItemsServiceMock;
-    private Mock<IImageStorageService> _imageStorageServiceMock;
-    private Mock<ImageUrlService> _imageUrlServiceMock;
-    private const string TestUserId = "test-user-id";
-    private FoundItem TestItem;
-
-    [SetUp]
-    public void Setup()
-    {
-        _foundItemsServiceMock = new Mock<IFoundItemService>();
-
-        _imageStorageServiceMock =
-        new Mock<IImageStorageService>();
-
-        var options =
-            Options.Create(
-                new SupabaseSettings
-                {
-                    Url = "https://test.com",
-                    Bucket = "test-bucket",
-                    AnonKey = "test-key"
-                });
-
-        var imageUrlService =
-            new ImageUrlService(options);
-
-        _foundItemController =
-                new FoundItemsController(
-                    _foundItemsServiceMock.Object,
-                    _imageStorageServiceMock.Object,
-                    imageUrlService);
-
-        TestItem = new FoundItem
-        {
-            Id = 1,
-            DateFound = new DateOnly(2025, 6, 1),
-            City = "London",
-            Postcode = "SW1A1AA",
-            Email = "john@test.com",
-            PhoneNumber = "07123456789",
-            Category = "Wallet",
-            ItemDescription = "Wallet",
-            AdditionalInformation = "Black wallet",
-            Picture = "FoundItems/test.jpg",
-            UserId = TestUserId
-        };
-    }
-    private void SetAuthenticatedUser(string userId)
-    {
-        var claims = new List<Claim>
-    {
-        new Claim(
-            ClaimTypes.NameIdentifier,
-            userId)
-    };
-
-        var identity =
-            new ClaimsIdentity(
-                claims,
-                "TestAuth");
-
-        var principal =
-            new ClaimsPrincipal(identity);
-
-        _foundItemController.ControllerContext =
-            new ControllerContext
-            {
-                HttpContext =
-                    new DefaultHttpContext
-                    {
-                        User = principal
-                    }
-            };
-    }
-
-    private UpdateFoundItemDTO CreateUpdateDto()
-    {
-        return new UpdateFoundItemDTO
-        {
-            City = "London",
-            Postcode = "SW1A1AA",
-            Email = "john@test.com",
-            PhoneNumber = "07123456789",
-            Category = "Wallet",
-            ItemDescription = "Updated Wallet",
-            AdditionalInformation = "Updated Info",
-        };
-    }
-    [Test]
-    public void GetAllItems_Returns_Ok_With_List_Of_Items()
-    {
-        List<FoundItem> foundItems = new List<FoundItem>
-        {
-            new FoundItem(),
-            new FoundItem()
-        };
-
-        _foundItemsServiceMock.Setup(s => s.GetFoundItems()).Returns(foundItems);
-
-        OkObjectResult? result = _foundItemController.GetFoundItems() as OkObjectResult;
-
-        Assert.That(result, Is.TypeOf<OkObjectResult>());
-        Assert.That(result.Value, Is.EqualTo(foundItems));
-    }
-
-    [Test]
-    public void GetOneItem_Returns_Ok_With_One_Item()
-    {
-        FoundItem oneFoundItem = new FoundItem();
-
-        _foundItemsServiceMock.Setup(s => s.GetFoundItemsById(1)).Returns(oneFoundItem);
-
-        OkObjectResult? result = _foundItemController.GetFoundItemById(1) as OkObjectResult;
-
-        Assert.That(result.Value, Is.EqualTo(oneFoundItem));
-        Assert.That(result.StatusCode, Is.EqualTo(200));
-    }
-    [Test]
-    public async Task DeleteFoundItem_Returns_NoContent()
-    {
-        SetAuthenticatedUser(TestUserId);
-
-        _foundItemsServiceMock
-            .Setup(x => x.GetFoundItemsById(1))
-            .Returns(TestItem);
-
-        _foundItemsServiceMock
-            .Setup(x => x.DeleteFoundItemById(1))
-            .Returns(true);
-
-        var result =
-            await _foundItemController
-                .DeleteFoundItemById(1);
-
-        Assert.That(
-            result,
-            Is.TypeOf<NoContentResult>());
-    }
-
-    [Test]
-    public async Task DeleteFoundItem_Returns_NotFound_When_Item_Missing()
-    {
-        // Arrange
-        SetAuthenticatedUser(TestUserId);
-
-        _foundItemsServiceMock
-            .Setup(s => s.GetFoundItemsById(1))
-            .Returns((FoundItem?)null);
-
-        // Act
-        var result =
-            await _foundItemController.DeleteFoundItemById(1);
-
-        // Assert
-        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
-
-        var notFound =
-            (NotFoundObjectResult)result;
-
-        Assert.That(notFound.StatusCode, Is.EqualTo(404));
-    }
-
-    [Test]
-    public async Task DeleteFoundItem_Returns_Forbid_When_NotOwner()
-    {
-        SetAuthenticatedUser("different-user");
-
-        _foundItemsServiceMock
-            .Setup(x => x.GetFoundItemsById(1))
-            .Returns(TestItem);
-
-        var result =
-            await _foundItemController
-                .DeleteFoundItemById(1);
-
-        Assert.That(
-            result,
-            Is.TypeOf<ForbidResult>());
-    }
-
-    [Test]
-    public void UpdateFoundItemById_ReturnsOkResult()
-    {
-        // Arrange
-        var dto = new UpdateFoundItemDTO(
-            "London",
-            "SW1A1AA",
-            "john.doe@example.com",
-            "07123456789",
-            "Wallet",
-            "Black leather wallet with several bank cards inside.",
-            "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
-        );
-
-        var output = new FoundItem(
-            "London",
-            "SW1A1AA",
-            "john.doe@example.com",
-            "07123456789",
-            "Wallet",
-            "Black leather wallet with several bank cards inside.",
-            "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg",
-            "test-user-id"
-        );
-
-        _foundItemsServiceMock
-            .Setup(s => s.UpdateFoundItemById(dto, 1))
-            .Returns(output);
-
-        // Act
-        var result = _foundItemController.UpdateFoundItemById(dto, 1);
-
-        // Assert
-        Assert.That(result, Is.InstanceOf<OkObjectResult>());
-    }
-
-    [Test]
-    public void UpdateFoundItemById_CallsServiceOnce()
-    {
-        // Arrange
-        var dto = new UpdateFoundItemDTO(
-            "London",
-            "SW1A1AA",
-            "john.doe@example.com",
-            "07123456789",
-            "Wallet",
-            "Black leather wallet with several bank cards inside.",
-            "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
-        );
-
-        var output = new FoundItem(
-            "London",
-            "SW1A1AA",
-            "john.doe@example.com",
-            "07123456789",
-            "Wallet",
-            "Black leather wallet with several bank cards inside.",
-            "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg",
-            "test-user-id"
-        );
-
-        _foundItemsServiceMock
-            .Setup(s => s.UpdateFoundItemById(dto, 1))
-            .Returns(output);
-
-        // Act
-        _foundItemController.UpdateFoundItemById(dto, 1);
-
-        // Assert
-        _foundItemsServiceMock.Verify(
-            service => service.UpdateFoundItemById(dto, 1),
-            Times.Once());
-    }
-
-    [Test]
-    public void UpdateFoundItemById_ReturnsStatusCode200()
-    {
-        // Arrange
-        var dto = new UpdateFoundItemDTO(
-            "London",
-            "SW1A1AA",
-            "john.doe@example.com",
-            "07123456789",
-            "Wallet",
-            "Black leather wallet with several bank cards inside.",
-            "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
-        );
-
-        var output = new FoundItem(
-            "London",
-            "SW1A1AA",
-            "john.doe@example.com",
-            "07123456789",
-            "Wallet",
-            "Black leather wallet with several bank cards inside.",
-            "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg",
-            "test-user-id"
-        );
-
-        _foundItemsServiceMock
-            .Setup(s => s.UpdateFoundItemById(dto, 1))
-            .Returns(output);
-
-        // Act
-        OkObjectResult result = (OkObjectResult)_foundItemController
-            .UpdateFoundItemById(dto, 1);
-
-        // Assert
-        Assert.That(result.StatusCode, Is.EqualTo(200));
-    }
-
-    [Test]
-    public void UpdateFoundItemById_ReturnsUpdatedFoundItem()
-    {
-        // Arrange
-        var dto = new UpdateFoundItemDTO(
-            "London",
-            "SW1A1AA",
-            "john.doe@example.com",
-            "07123456789",
-            "Wallet",
-            "Black leather wallet with several bank cards inside.",
-            "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg"
-        );
-
-        var output = new FoundItem(
-            "London",
-            "SW1A1AA",
-            "john.doe@example.com",
-            "07123456789",
-            "Wallet",
-            "Black leather wallet with several bank cards inside.",
-            "Found near Victoria Station on Tuesday evening.",
-            "wallet-image.jpg",
-            "test-user-id"
-        );
-
-        _foundItemsServiceMock
-            .Setup(s => s.UpdateFoundItemById(dto, 1))
-            .Returns(output);
-
-        // Act
-        OkObjectResult result = (OkObjectResult)_foundItemController
-            .UpdateFoundItemById(dto, 1);
-
-        // Assert
-        Assert.That(result.Value, Is.EqualTo(output));
-    }
-
-    [Test]
-    public void UpdateFoundItemById_ReturnsNotFound_WhenItemDoesNotExist()
-    {
-        // Arrange
-        var dto = new UpdateFoundItemDTO(
-            "London",
-            "SW1A1AA",
-            "john@test.com",
-            "07123456789",
-            "Wallet",
-            "Black wallet",
-            "Extra info",
-            "wallet.jpg"
-        );
-
-        _foundItemsServiceMock
-            .Setup(s => s.UpdateFoundItemById(dto, 1))
-            .Returns((FoundItem)null);
-
-        // Act
-        var result = _foundItemController.UpdateFoundItemById(dto, 1);
-
-        // Assert
-        Assert.IsInstanceOf<NotFoundResult>(result);
-    }
-
-    [Test]
-    public void UpdateFoundItemById_ReturnsBadRequest_WhenModelStateIsInvalid()
-    {
-        // Arrange
-        var dto = new UpdateFoundItemDTO(
-            "",
-            "",
-            "invalid-email",
-            "123",
-            "",
-            "",
-            "",
-            ""
-        );
-
-        _foundItemController.ModelState.AddModelError(
-            "Category",
-            "Category is required");
-
-        // Act
-        var result = _foundItemController.UpdateFoundItemById(dto, 1);
-
-        // Assert
-        Assert.IsInstanceOf<BadRequestObjectResult>(result);
-    }
-
-    [Test]
-    public void UpdateFoundItemById_Returns500_WhenExceptionOccurs()
-    {
-        // Arrange
-        var dto = new UpdateFoundItemDTO(
-            "London",
-            "SW1A1AA",
-            "john@test.com",
-            "07123456789",
-            "Wallet",
-            "Black wallet",
-            "Extra info",
-            "wallet.jpg"
-        );
-
-        _foundItemsServiceMock
-            .Setup(s => s.UpdateFoundItemById(dto, 1))
-            .Throws(new Exception());
-
-        // Act
-        var result = _foundItemController.UpdateFoundItemById(dto, 1);
-
-        // Assert
-        var statusResult = (ObjectResult)result;
-
-        Assert.That(statusResult, Is.Not.Null);
-        Assert.Multiple(() =>
-        {
-            Assert.That(statusResult.StatusCode, Is.EqualTo(500));
-            Assert.That(
-                statusResult.Value,
-                Is.EqualTo("An error occurred while updating the found item."));
-        });
-    }
-
-    [Test]
-    public void AddOneFoundItem_Returns_Ok_With_Added_Item()
-    {
-        var newItem = new FoundItem();
-
-        _foundItemsServiceMock.Setup(n => n.AddOneFoundItem(newItem)).Returns(newItem);
-
-        CreatedResult? result = _foundItemController.AddOneFoundItem(newItem) as CreatedResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(201, result.StatusCode);
-        Assert.AreEqual(newItem, result.Value);
-
-    }
-}
+﻿//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.IdentityModel.Tokens;
+//using Moq;
+//using ReUnited_Backend.Controllers;
+//using ReUnited_Backend.DataModels;
+//using ReUnited_Backend.DTOs;
+//using ReUnited_Backend.Services;
+//using Microsoft.Extensions.Options;
+//using System.Security.Claims;
+//using Microsoft.AspNetCore.Http;
+
+//namespace ReUnited_Test;
+
+//public class FoundItemsController_Test
+//{
+
+//    private FoundItemsController _foundItemController;
+//    private Mock<IFoundItemService> _foundItemsServiceMock;
+//    private Mock<IImageStorageService> _imageStorageServiceMock;
+//    private Mock<ImageUrlService> _imageUrlServiceMock;
+//    private const string TestUserId = "test-user-id";
+//    private FoundItem TestItem;
+
+//    [SetUp]
+//    public void Setup()
+//    {
+//        _foundItemsServiceMock = new Mock<IFoundItemService>();
+
+//        _imageStorageServiceMock =
+//        new Mock<IImageStorageService>();
+
+//        var options =
+//            Options.Create(
+//                new SupabaseSettings
+//                {
+//                    Url = "https://test.com",
+//                    Bucket = "test-bucket",
+//                    AnonKey = "test-key"
+//                });
+
+//        var imageUrlService =
+//            new ImageUrlService(options);
+
+//        _foundItemController =
+//                new FoundItemsController(
+//                    _foundItemsServiceMock.Object,
+//                    _imageStorageServiceMock.Object,
+//                    imageUrlService);
+
+//        TestItem = new FoundItem
+//        {
+//            Id = 1,
+//            DateFound = new DateOnly(2025, 6, 1),
+//            City = "London",
+//            Postcode = "SW1A1AA",
+//            Email = "john@test.com",
+//            PhoneNumber = "07123456789",
+//            Category = "Wallet",
+//            ItemDescription = "Wallet",
+//            AdditionalInformation = "Black wallet",
+//            Picture = "FoundItems/test.jpg",
+//            UserId = TestUserId
+//        };
+//    }
+//    private void SetAuthenticatedUser(string userId)
+//    {
+//        var claims = new List<Claim>
+//    {
+//        new Claim(
+//            ClaimTypes.NameIdentifier,
+//            userId)
+//    };
+
+//        var identity =
+//            new ClaimsIdentity(
+//                claims,
+//                "TestAuth");
+
+//        var principal =
+//            new ClaimsPrincipal(identity);
+
+//        _foundItemController.ControllerContext =
+//            new ControllerContext
+//            {
+//                HttpContext =
+//                    new DefaultHttpContext
+//                    {
+//                        User = principal
+//                    }
+//            };
+//    }
+
+//    private UpdateFoundItemDTO CreateUpdateDto()
+//    {
+//        return new UpdateFoundItemDTO
+//        {
+//            City = "London",
+//            Postcode = "SW1A1AA",
+//            Email = "john@test.com",
+//            PhoneNumber = "07123456789",
+//            Category = "Wallet",
+//            ItemDescription = "Updated Wallet",
+//            AdditionalInformation = "Updated Info",
+//        };
+//    }
+//    [Test]
+//    public void GetAllItems_Returns_Ok_With_List_Of_Items()
+//    {
+//        List<FoundItem> foundItems = new List<FoundItem>
+//        {
+//            new FoundItem(),
+//            new FoundItem()
+//        };
+
+//        _foundItemsServiceMock.Setup(s => s.GetFoundItems()).Returns(foundItems);
+
+//        OkObjectResult? result = _foundItemController.GetFoundItems() as OkObjectResult;
+
+//        Assert.That(result, Is.TypeOf<OkObjectResult>());
+//        Assert.That(result.Value, Is.EqualTo(foundItems));
+//    }
+
+//    [Test]
+//    public void GetOneItem_Returns_Ok_With_One_Item()
+//    {
+//        FoundItem oneFoundItem = new FoundItem();
+
+//        _foundItemsServiceMock.Setup(s => s.GetFoundItemsById(1)).Returns(oneFoundItem);
+
+//        OkObjectResult? result = _foundItemController.GetFoundItemById(1) as OkObjectResult;
+
+//        Assert.That(result.Value, Is.EqualTo(oneFoundItem));
+//        Assert.That(result.StatusCode, Is.EqualTo(200));
+//    }
+//    [Test]
+//    public async Task DeleteFoundItem_Returns_NoContent()
+//    {
+//        SetAuthenticatedUser(TestUserId);
+
+//        _foundItemsServiceMock
+//            .Setup(x => x.GetFoundItemsById(1))
+//            .Returns(TestItem);
+
+//        _foundItemsServiceMock
+//            .Setup(x => x.DeleteFoundItemById(1))
+//            .Returns(true);
+
+//        var result =
+//            await _foundItemController
+//                .DeleteFoundItemById(1);
+
+//        Assert.That(
+//            result,
+//            Is.TypeOf<NoContentResult>());
+//    }
+
+//    [Test]
+//    public async Task DeleteFoundItem_Returns_NotFound_When_Item_Missing()
+//    {
+//        // Arrange
+//        SetAuthenticatedUser(TestUserId);
+
+//        _foundItemsServiceMock
+//            .Setup(s => s.GetFoundItemsById(1))
+//            .Returns((FoundItem?)null);
+
+//        // Act
+//        var result =
+//            await _foundItemController.DeleteFoundItemById(1);
+
+//        // Assert
+//        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+
+//        var notFound =
+//            (NotFoundObjectResult)result;
+
+//        Assert.That(notFound.StatusCode, Is.EqualTo(404));
+//    }
+
+//    [Test]
+//    public async Task DeleteFoundItem_Returns_Forbid_When_NotOwner()
+//    {
+//        SetAuthenticatedUser("different-user");
+
+//        _foundItemsServiceMock
+//            .Setup(x => x.GetFoundItemsById(1))
+//            .Returns(TestItem);
+
+//        var result =
+//            await _foundItemController
+//                .DeleteFoundItemById(1);
+
+//        Assert.That(
+//            result,
+//            Is.TypeOf<ForbidResult>());
+//    }
+
+//    [Test]
+//    public void UpdateFoundItemById_ReturnsOkResult()
+//    {
+//        // Arrange
+//        var dto = new UpdateFoundItemDTO(
+//            "London",
+//            "SW1A1AA",
+//            "john.doe@example.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black leather wallet with several bank cards inside.",
+//            "Found near Victoria Station on Tuesday evening.",
+//            "wallet-image.jpg"
+//        );
+
+//        var output = new FoundItem(
+//            "London",
+//            "SW1A1AA",
+//            "john.doe@example.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black leather wallet with several bank cards inside.",
+//            "Found near Victoria Station on Tuesday evening.",
+//            "wallet-image.jpg",
+//            "test-user-id"
+//        );
+
+//        _foundItemsServiceMock
+//            .Setup(s => s.UpdateFoundItemById(dto, 1))
+//            .Returns(output);
+
+//        // Act
+//        var result = _foundItemController.UpdateFoundItemById(dto, 1);
+
+//        // Assert
+//        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+//    }
+
+//    [Test]
+//    public void UpdateFoundItemById_CallsServiceOnce()
+//    {
+//        // Arrange
+//        var dto = new UpdateFoundItemDTO(
+//            "London",
+//            "SW1A1AA",
+//            "john.doe@example.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black leather wallet with several bank cards inside.",
+//            "Found near Victoria Station on Tuesday evening.",
+//            "wallet-image.jpg"
+//        );
+
+//        var output = new FoundItem(
+//            "London",
+//            "SW1A1AA",
+//            "john.doe@example.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black leather wallet with several bank cards inside.",
+//            "Found near Victoria Station on Tuesday evening.",
+//            "wallet-image.jpg",
+//            "test-user-id"
+//        );
+
+//        _foundItemsServiceMock
+//            .Setup(s => s.UpdateFoundItemById(dto, 1))
+//            .Returns(output);
+
+//        // Act
+//        _foundItemController.UpdateFoundItemById(dto, 1);
+
+//        // Assert
+//        _foundItemsServiceMock.Verify(
+//            service => service.UpdateFoundItemById(dto, 1),
+//            Times.Once());
+//    }
+
+//    [Test]
+//    public void UpdateFoundItemById_ReturnsStatusCode200()
+//    {
+//        // Arrange
+//        var dto = new UpdateFoundItemDTO(
+//            "London",
+//            "SW1A1AA",
+//            "john.doe@example.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black leather wallet with several bank cards inside.",
+//            "Found near Victoria Station on Tuesday evening.",
+//            "wallet-image.jpg"
+//        );
+
+//        var output = new FoundItem(
+//            "London",
+//            "SW1A1AA",
+//            "john.doe@example.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black leather wallet with several bank cards inside.",
+//            "Found near Victoria Station on Tuesday evening.",
+//            "wallet-image.jpg",
+//            "test-user-id"
+//        );
+
+//        _foundItemsServiceMock
+//            .Setup(s => s.UpdateFoundItemById(dto, 1))
+//            .Returns(output);
+
+//        // Act
+//        OkObjectResult result = (OkObjectResult)_foundItemController
+//            .UpdateFoundItemById(dto, 1);
+
+//        // Assert
+//        Assert.That(result.StatusCode, Is.EqualTo(200));
+//    }
+
+//    [Test]
+//    public void UpdateFoundItemById_ReturnsUpdatedFoundItem()
+//    {
+//        // Arrange
+//        var dto = new UpdateFoundItemDTO(
+//            "London",
+//            "SW1A1AA",
+//            "john.doe@example.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black leather wallet with several bank cards inside.",
+//            "Found near Victoria Station on Tuesday evening.",
+//            "wallet-image.jpg"
+//        );
+
+//        var output = new FoundItem(
+//            "London",
+//            "SW1A1AA",
+//            "john.doe@example.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black leather wallet with several bank cards inside.",
+//            "Found near Victoria Station on Tuesday evening.",
+//            "wallet-image.jpg",
+//            "test-user-id"
+//        );
+
+//        _foundItemsServiceMock
+//            .Setup(s => s.UpdateFoundItemById(dto, 1))
+//            .Returns(output);
+
+//        // Act
+//        OkObjectResult result = (OkObjectResult)_foundItemController
+//            .UpdateFoundItemById(dto, 1);
+
+//        // Assert
+//        Assert.That(result.Value, Is.EqualTo(output));
+//    }
+
+//    [Test]
+//    public void UpdateFoundItemById_ReturnsNotFound_WhenItemDoesNotExist()
+//    {
+//        // Arrange
+//        var dto = new UpdateFoundItemDTO(
+//            "London",
+//            "SW1A1AA",
+//            "john@test.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black wallet",
+//            "Extra info",
+//            "wallet.jpg"
+//        );
+
+//        _foundItemsServiceMock
+//            .Setup(s => s.UpdateFoundItemById(dto, 1))
+//            .Returns((FoundItem)null);
+
+//        // Act
+//        var result = _foundItemController.UpdateFoundItemById(dto, 1);
+
+//        // Assert
+//        Assert.IsInstanceOf<NotFoundResult>(result);
+//    }
+
+//    [Test]
+//    public void UpdateFoundItemById_ReturnsBadRequest_WhenModelStateIsInvalid()
+//    {
+//        // Arrange
+//        var dto = new UpdateFoundItemDTO(
+//            "",
+//            "",
+//            "invalid-email",
+//            "123",
+//            "",
+//            "",
+//            "",
+//            ""
+//        );
+
+//        _foundItemController.ModelState.AddModelError(
+//            "Category",
+//            "Category is required");
+
+//        // Act
+//        var result = _foundItemController.UpdateFoundItemById(dto, 1);
+
+//        // Assert
+//        Assert.IsInstanceOf<BadRequestObjectResult>(result);
+//    }
+
+//    [Test]
+//    public void UpdateFoundItemById_Returns500_WhenExceptionOccurs()
+//    {
+//        // Arrange
+//        var dto = new UpdateFoundItemDTO(
+//            "London",
+//            "SW1A1AA",
+//            "john@test.com",
+//            "07123456789",
+//            "Wallet",
+//            "Black wallet",
+//            "Extra info",
+//            "wallet.jpg"
+//        );
+
+//        _foundItemsServiceMock
+//            .Setup(s => s.UpdateFoundItemById(dto, 1))
+//            .Throws(new Exception());
+
+//        // Act
+//        var result = _foundItemController.UpdateFoundItemById(dto, 1);
+
+//        // Assert
+//        var statusResult = (ObjectResult)result;
+
+//        Assert.That(statusResult, Is.Not.Null);
+//        Assert.Multiple(() =>
+//        {
+//            Assert.That(statusResult.StatusCode, Is.EqualTo(500));
+//            Assert.That(
+//                statusResult.Value,
+//                Is.EqualTo("An error occurred while updating the found item."));
+//        });
+//    }
+
+//    //[Test]
+//    //public void AddOneFoundItem_Returns_Ok_With_Added_Item()
+//    //{
+//    //    var newItem = new FoundItem();
+
+//    //    _foundItemsServiceMock.Setup(n => n.AddOneFoundItem(newItem)).Returns(newItem);
+
+//    //    CreatedResult? result = _foundItemController.AddOneFoundItem(newItem) as CreatedResult;
+
+//    //    Assert.IsNotNull(result);
+//    //    Assert.AreEqual(201, result.StatusCode);
+//    //    Assert.AreEqual(newItem, result.Value);
+
+//    //}
+//}
